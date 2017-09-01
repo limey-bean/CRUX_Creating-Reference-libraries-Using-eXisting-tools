@@ -29,7 +29,7 @@ LOAD_QIIME="module load qiime" 								#or what ever code is used to load qiime 
 # Paths to reference databases
 ###########################
 
-#Obitools database folder. Should contain one or more subfolders that contain obitools formatted datbases (e.g. ~/crux_db/Obitools_databases contains EMBL_6162017_std_other, EMBL_6162017_std_pro, EMBL_6162017_std_vert, EMBL_6162017_std_plant.  Each of these subfolders contains the database files with extensions: .sdx, .rdx, and .tdx)
+#Obitools database folder. Should contain one or more subfolders that contain obitools formatted datbases (e.g. ~/crux_release_V1_db/Obitools_databases contains EMBL_6162017_std_other, EMBL_6162017_std_pro, EMBL_6162017_std_vert, EMBL_6162017_std_plant.  Each of these subfolders contains the database files with extensions: .sdx, .rdx, and .tdx)
 OBI_DB="${DB}/Obitools_databases" 							#see documentation for how to build this library
 
 #NCBI taxonomy dump
