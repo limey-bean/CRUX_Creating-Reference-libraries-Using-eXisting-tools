@@ -38,6 +38,11 @@ TAXO="${DB}/TAXO" 											#see documentation for how to obtain this directory
 #NCBI key for accession number to taxonomy assignment
 A2T="${DB}/accession2taxonomy/nucl_gb.accession2taxid" 		#see documentation for how to obtain this file
 
+#BLAST db folder.  Should contain many files like the following: nt.00.nhr, nt.00.nin, nt.00.nnd, nt.00.nni, nt.00.nsq, nt.01.nhr, nt.01.nin, nt.01.nnd, nt.01.nni, nt.01.nsq, nt.01.nhr, nt.02.nin,......,......,nt.nal
+BLAST_DB="${DB}/NCBI_blast_nt/nt"							#see documentation for how to obtain this director
+
+
+
 
 
 
