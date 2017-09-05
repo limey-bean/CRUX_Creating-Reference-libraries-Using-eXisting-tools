@@ -126,6 +126,8 @@ Part 4: **pending**
 * phylogenetic tree 
 * detailed log files
 * summary statistic files
+* script that checks that the user has all of the dependencies
+
   
   
   
