@@ -127,6 +127,17 @@ python ${ENTREZ_QIIME} -i ${ODIR}/${NAME}_BLAST/${NAME}_dereplicated_BLAST.fasta
 sed ’s/|/;/g’ ${ODIR}/${NAME}_BLAST/${NAME}_dereplicated_BLAST_taxonomy.txt
 echo "...Taxonomy file is complete"
 date
+#####
+# todo: fix these arguments
+echo " "
+echo " "
+echo "Part 2.4:"
+echo "Clean the output of BLAST"
+${MODULE_SOURCE}
+${LOAD_QIIME}
+#python clean_blast.py unclean_blast_name clean_blast_name unclean_tax_name clean_tax_name
+echo "...Taxonomy file is complete"
+date
 
 ##########################
 # Part 3: Clustering
