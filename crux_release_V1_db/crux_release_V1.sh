@@ -28,8 +28,8 @@ done
 
 ###########################################
                                                                                                                                                 
-# Gaurav Kandlikar (gkandlikar@ucla.edu) and Emily Curd (eecurd@g.ucla.edu)
-# Updated 08 August 2017
+# Emily Curd (eecurd@g.ucla.edu), Gaurav Kandlikar (gkandlikar@ucla.edu), and Jesse Gomer (jessegomer@gmail.com)
+# Updated 07 September 2017
 
 # this is a draft of a pipeline that takes any pair of primer sequences and generages a comprehensive reference database that could be amplified with those primers, using as much data from published sequences as posible. 
 
@@ -113,8 +113,8 @@ echo " "
 echo "Part 2.2:" 
 echo "Merge BLAST results, de-replicate by NCBI accession version numbers, and convert to fasta format." 
 cat ${ODIR}/${NAME}_BLAST/${NAME}_*_BLAST_out.txt  > ${ODIR}/${NAME}_BLAST/${NAME}_merged_BLAST_out.txt
-cat ${ODIR}/${NAME}_BLAST/${NAME}_merged_BLAST_out.txt  | sed "s/-//g"| awk -F"\t" '!_[$1]++' |awk 'BEGIN { FS="\t"; } {print ">"$1"\n"$3}' > ${ODIR}/${NAME}_BLAST/${NAME}_dereplicated_BLAST.fasta
-echo "...BLAST results are formated"
+cat ${ODIR}/${NAME}_BLAST/${NAME}_merged_BLAST_out.txt  | sed "s/-//g"| awk -F"\t" '!_[$1]++' |awk 'BEGIN { FS="\t"; } {print ">"$1"\n"$3}' > ${ODIR}/${NAME}_BLAST/${NAME}_dirty_dereplicated_BLAST.fasta
+echo "...uncleaned BLAST results are formated"
 date
 ###
 echo " "
@@ -123,10 +123,19 @@ echo "Part 2.3:"
 echo "Run entrez-qiime to generate a taxonomy file corresponding to the NCBI accession version numbers for BLAST reads." 
 ${MODULE_SOURCE}
 ${LOAD_QIIME}
-python ${ENTREZ_QIIME} -i ${ODIR}/${NAME}_BLAST/${NAME}_dereplicated_BLAST.fasta -o ${ODIR}/${NAME}_BLAST/${NAME}_dereplicated_BLAST_taxonomy -n ${TAXO} -a ${A2T} 
-sed ’s/|/;/g’ ${ODIR}/${NAME}_BLAST/${NAME}_dereplicated_BLAST_taxonomy.txt
-echo "...Taxonomy file is complete"
+python ${ENTREZ_QIIME} -i ${ODIR}/${NAME}_BLAST/${NAME}_dirty_dereplicated_BLAST.fasta -o ${ODIR}/${NAME}_BLAST/${NAME}_dirty_dereplicated_BLAST_taxonomy -n ${TAXO} -a ${A2T} 
+sed ’s/|/;/g’ ${ODIR}/${NAME}_BLAST/${NAME}_dirty_dereplicated_BLAST_taxonomy.txt
+echo "...uncleaned Taxonomy file is complete"
 date
+#####
+echo " "
+echo " "
+echo "Part 2.4:"
+echo "Clean the output of BLAST"
+python ${DB}/clean_blast.py ${ODIR}/${NAME}_BLAST/${NAME}_dirty_dereplicated_BLAST.fasta ${ODIR}/${NAME}_BLAST/${NAME}_dereplicated_BLAST.fasta ${ODIR}/${NAME}_BLAST/${NAME}_dirty_dereplicated_BLAST_taxonomy.txt ${ODIR}/${NAME}_BLAST/${NAME}_dereplicated_BLAST_taxonomy.txt
+echo "...BLAST results and Taxonomy file are clean"
+date
+
 
 ##########################
 # Part 3: Clustering
