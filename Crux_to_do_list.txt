@@ -1,0 +1,14 @@
+Small stuff to do list for Crux:
+
+1. line 127 - Part 2.3: entrez_qiime Taxonomy step - 
+	* sed error line 127
+
+
+Large stuff to do list for Crux:
+1. make a script for checking for / downloading dependencies
+2. add better log files for each step
+	* need to flesh out ideas prior to implementation
+3. Make summary tables / histograms....
+	* need to flesh out ideas prior to implementation
+	
+
