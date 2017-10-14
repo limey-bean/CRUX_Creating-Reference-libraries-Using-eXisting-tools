@@ -24,6 +24,7 @@ BLASTn_CMD="${DB}/ncbi-blast-2.6.0+/bin/blastn" 			#either the path to the blast
 MODULE_SOURCE="source /u/local/Modules/default/init/bash" 	#if none, leave empty <- for HPC
 LOAD_QIIME="module load qiime" 								#or what ever code is used to load qiime in a bash shell (e.g. on a mac it might be "macqiime")
 
+BOWTIE2="module load bowtie2"								#or what ever code is used to load bowtie2 in a bash shell 
 
 ###########################
 # Paths to reference databases
