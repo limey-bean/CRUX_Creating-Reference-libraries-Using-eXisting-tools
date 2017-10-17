@@ -6,7 +6,7 @@
 
 ## Introduction
   
-Taxonomic assignments of metabarcoding reads requires a comprehensive reference library. For 16S and 18S metabarcode reads, we use the Silva high quality ribosomal databases (Glöckner et al., 2017) for reference libraries. For all other metabarcodes we construct custom reference libraries using our in-house wrapper script, CRUX: Constructing Reference libraries Using eXisting tools. CRUX generates reference libraries by running in silico PCR (ecoPCR; Ficetola et al., 2010) against the EMBL standard nucleotide sequence database (Stoesser et al., 2002) to generate a seed library of reads with unique taxon identifiers. Because many sequencing records are deposited to Genbank (Benson et al., 2012) with the primer regions removed from the read, we BLAST (Camacho et al., 2009) the seed library against the NCBI nucleotide blast database (ftp://ftp.ncbi.nlm.nih.gov/blast/). Blast results are de-replicated by version accession number and converted to fasta format. A taxonomy identification file is generated from the fasta formatted blast output using entrez-qiime (https://github.com/bakerccm/entrez_qiime), the NCBI’s taxonomy dump and map of association between taxonomy and accession version numbers (ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/). To minimize the reference library file size and merge highly similar reads, we use Qiime (Caporaso et al., 2010) to cluster the reference library at 99% sequence similarity using Usearch (Edgar, 2010) and generate a corresponding taxonomy file assign taxonomy in Qiime using Uclust (Edgar, 2010) at 97%. 
+Taxonomic assignments of metabarcoding reads requires a comprehensive reference library. For 16S and 18S metabarcode reads, we use the Silva high quality ribosomal databases (Glöckner et al., 2017) for reference libraries, with slight modification. For all other metabarcodes we construct custom reference libraries using our in-house wrapper script, CRUX: Constructing Reference libraries Using eXisting tools. CRUX generates reference libraries by running in silico PCR (ecoPCR; Ficetola et al., 2010) against the EMBL standard nucleotide sequence database (Stoesser et al., 2002) to generate a seed library of reads with unique taxon identifiers. We verify that the seed libray reads match the amplicon by checking for primer regions and trimming them using cutadapt (Martin, 2011).  Because many sequencing records are deposited to Genbank (Benson et al., 2012) with the primer regions removed from the read, we BLAST (Camacho et al., 2009) the seed library against the NCBI nucleotide blast database (ftp://ftp.ncbi.nlm.nih.gov/blast/). Blast results are de-replicated by version accession number and converted to fasta format. A taxonomy identification file is generated from the fasta formatted blast output using entrez-qiime (https://github.com/bakerccm/entrez_qiime), the NCBI’s taxonomy dump and map of association between taxonomy and accession version numbers (ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/). The down stream metabarcoding pipeline Anacapa (https://github.com/limey-bean/Anacapa) iterativley runs Bowtie2 (Langmead et al., 2009) to assigns reads to references databases clustered at decreasing similairy (99, 97, 95, 90, 85, 80 percent).  There databases are generaged using Qiime (Caporaso et al., 2010) to cluster the reference library at 99, 97, 95, 90, 85, 80 percent sequence similarity using Usearch (Edgar, 2010) and generate a corresponding taxonomy file assign taxonomy in Qiime using Uclust (Edgar, 2010) at 97%. The final step is to reformat the refence reads into Bowtie2 formated data index libraries.
 
 Next steps: The reference library can then be used to generate a multiple sequence alignment using muscle (ref) and a phylogenetic tree using (decide). 
 
@@ -24,17 +24,23 @@ Next steps: The reference library can then be used to generate a multiple sequen
 2. ecoPCR: https://git.metabarcoding.org/obitools/ecopcr/wikis/home
 	* If you are not modifying the Crux_config.sh, then the path to the ecoPCR executable should be as follows: ~/crux_release_V1_db/ecoPCR/src/ecoPCR
 
-3. BLAST+: https://www.ncbi.nlm.nih.gov/books/NBK279690/
+3. cutadapt: http://cutadapt.readthedocs.io/en/stable/index.html
+        * cutadapt does not need to be installed in the crux_release_V1_db folder, however you will need to verify that the Crux_config.sh is modified for you computing environment. 
+
+4. BLAST+: https://www.ncbi.nlm.nih.gov/books/NBK279690/
 	* the lastest BLAST executables can be downloaded from: ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.6.0/
 	* If you are not modifying the Crux_config.sh, then the path to the blastn executable should be as follows: ~/crux_release_V1_db/ncbi-blast-2.6.0+/bin/blastn
 
-4. entrez_qiime: https://github.com/bakerccm/entrez_qiime
+5. entrez_qiime: https://github.com/bakerccm/entrez_qiime
 	* **entrez_qiime.py** is already included in crux_release_V1_db folder
 
-5. Qiime 1: http://qiime.org/index.html
+6. Qiime 1: http://qiime.org/index.html
 	* Qiime 1 does not need to be installed in the crux_release_V1_db folder, however you will need to verify that the Crux_config.sh is modified for you computing environment. 
 	* Installation information can be found here: http://qiime.org/install/install.html
 	* We will transition to Qiime 2 by January 01, 2018. 
+	
+7. Bowtie2: http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+	* Bowtie2 does not need to be installed in the crux_release_V1_db folder, however you will need to verify that the Crux_config.sh is modified for you computing environment. 
   
   
 **__Databases to download__**
@@ -87,9 +93,9 @@ Next steps: The reference library can then be used to generate a multiple sequen
   
 ## Running CRUX
 * The command to run CRUX is:
-	* sh crux_release_V1.sh -n metabarcode_target_name -f forward_primer_sequence -r reverse_primer_sequence -d path_to_CRUX_db_folder -o path_to_output_folder
+	* sh crux_release_V1.sh -n metabarcode_target_name -f forward_primer_sequence -r reverse_primer_sequence -l shortest expected length of an amplicon -m longest expected length of an amplicon -d path_to_CRUX_db_folder -o path_to_output_folder -c clean up intermediate files "y"/"n"
 * An example:
-	* sh ~/crux_release_V1_db/crux_release_V1.sh -n CO1 -f GGWACWGGWTGAACWGTWTAYCCYCC  -r TANACYTCnGGRTGNCCRAARAAYCA -d ~/crux_release_V1_db -o ~/crux_release_V1_db/CO1 
+	* sh ~/crux_release_V1_db/crux_release_V1.sh -n CO1 -f GGWACWGGWTGAACWGTWTAYCCYCC  -r TANACYTCnGGRTGNCCRAARAAYCA -l 200 -m 650 -d ~/crux_release_V1_db -o ~/crux_release_V1_db/CO1 -c n
 * The final database files can be found in the metabarcode_target_name_database folder with in the user specified output folder. 
 	
 	
@@ -101,6 +107,8 @@ Part 1: ecoPCR
 	* ecoPCR parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
 2. ecoPCR results are de-replicated based on taxon id (taxid), and converted to fasta format.
 	* The resulting fasta files are segregated by the number of database files generated by the user. 
+	* Primers are not removed during this step.
+3. Using cutadapt, verify and retain only the ecoPCR reads with correct primer seqeunces, then trim the primers from the 5' and 3' ends.
 	
 Part 2: blasting
 
@@ -108,8 +116,7 @@ Part 2: blasting
 	* blastn parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
 2. The blast results are de-replicated by NCBI accession version number and converted into fasta format.
 3. entrez-qiime is then used to determine taxonomy for each read based on NCBI version accession number. 
-4. **pending**
-	* for all reads where the taxonomy has NA;NA;NA at the beginning of the taxonomic path, remove those reads from the cleaned blast results fasta output and corresponding taxonomy file.
+4. All reads with low resoluiton taxonomy (e.g NA;NA;NA at the beginning of the taxonomic path, or those assignmed uncultured, unknown, unassigned, or environmental) are removed from the cleaned blast results fasta output and corresponding taxonomy file.
 	
 Part 3: Clustering
 
@@ -149,5 +156,9 @@ Edgar, R.C., 2010. Search and clustering orders of magnitude faster than BLAST. 
 Ficetola, G.F., Coissac, E., Zundel, S., Riaz, T., Shehzad, W., Bessière, J., Taberlet, P. and Pompanon, F., 2010. An in silico approach for the evaluation of DNA barcodes. BMC genomics, 11(1), p.434.
 
 Glöckner, F.O., Yilmaz, P., Quast, C., Gerken, J., Beccati, A., Ciuprina, A., Bruns, G., Yarza, P., Peplies, J., Westram, R. and Ludwig, W., 2017. 25 years of serving the community with ribosomal RNA gene reference databases and tools. Journal of Biotechnology.
+
+Martin, M., 2011. Cutadapt removes adapter sequences from high-throughput sequencing reads. EMBnet. journal, 17(1), pp.pp-10.
+
+Langmead, B., Trapnell, C., Pop, M. and Salzberg, S.L., 2009. Ultrafast and memory-efficient alignment of short DNA sequences to the human genome. Genome biology, 10(3), p.R25.
 
 Stoesser, G., Baker, W., van den Broek, A., Camon, E., Garcia-Pastor, M., Kanz, C., Kulikova, T., Leinonen, R., Lin, Q., Lombard, V. and Lopez, R., 2002. The EMBL nucleotide sequence database. Nucleic acids research, 30(1), pp.21-26.
