@@ -138,7 +138,7 @@ Parts 1 - 3 are run iteratively on each embl database folder (e.g. if you downlo
 6. The resulting files are the reference final databases.
 
 	
-###Part 5. Generate Bowtie2 index libraries
+### Part 5. Generate Bowtie2 index libraries
 
 1. Build bowtie2 index libraries for each of the final fasta files
 		
