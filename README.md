@@ -100,11 +100,9 @@ Next steps: The reference library can then be used to generate a multiple sequen
 	
 	
 ## Step by Step Explanation of CRUX
-
 Parts 1 - 3 are run iteratively on each embl database folder (e.g. if you downloaded and obitools converted four embl database floders you will run Parts 1-3 on each folder independently).
 
-###Part 1: ecoPCR
-
+### Part 1: ecoPCR
 1. Run ecoPCR using the user specified primer on the user generated OBItools compatible embl databases.  
 	* ecoPCR parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
 2. ecoPCR results are de-replicated based on taxon id (taxid), and converted to fasta format.
@@ -112,8 +110,7 @@ Parts 1 - 3 are run iteratively on each embl database folder (e.g. if you downlo
 	* Primers are not removed during this step.
 3. Using cutadapt, verify and retain only the ecoPCR reads with correct primer seqeunces, then trim the primers from the 5' and 3' ends.
 	
-###Part 2: blasting
-
+### Part 2: blasting
 1. The fasta files are blasted against the the NCBI nucleotide blast databases using blastn. 
 	* blastn parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
 	* default parameters are
@@ -122,36 +119,22 @@ Parts 1 - 3 are run iteratively on each embl database folder (e.g. if you downlo
 	     * minimum percent identity of the query relative to the subject = 60%
 	     * maximum number of hits to retain per subject = 1500
 	     * number of threads to launch = 100
-	     
 2. The blast results are de-replicated by NCBI accession version number and converted into fasta format.
-
 3. entrez-qiime is then used to determine taxonomy for each read based on NCBI version accession number. 
-
 4. All reads with low resoluiton taxonomy (e.g NA;NA;NA at the beginning of the taxonomic path, or those assignmed uncultured, unknown, unassigned, or environmental) are removed from the cleaned blast results fasta output and corresponding taxonomy file.
 	
-###Part 3: Clustering for percent similarity
-
+### Part 3: Clustering for percent similarity
 1. The resulting blastn hits results dereplicated and clustered at different percent simirity (99, 97, 95, 90, 85, 80) identity using usearch, implemented in Qiime
 	* Clustering databases at different percent identity is critical for running the bowtie2 taxonomy step of the Anacapa pipeline. 	
-	
 2. Assign taxonomy with uclust using the corresponding similarity used to culster the seqeuncing reads.  
-
 3. Remove any unassigned reads from the fasta and corresponding taxonomy file.
 
-
-
-###Part 4. Merge reads for a given similarity
-
+### Part 4. Merge reads for a given similarity
 1. Rename fasta reads and the corresponding taxonomy to reflect the embl database used to generate the initail blast seed library.
-
 2. Merge all of the the fasta reads and all of the corresponding taxonomy generated for a given similarity.
-
 3. Run usearch at 99% on the dataset, retaining the dereplicated reads.
-
 4. Assign taxonomy with uclust at 99%.
-
 5. Remove any unassigned reads from the fasta and corresponding taxonomy file.
-
 6. The resulting files are the reference final databases.
 
 	
