@@ -101,7 +101,9 @@ Next steps: The reference library can then be used to generate a multiple sequen
 	
 ## Step by Step Explanation of CRUX
 
-Part 1: ecoPCR
+Parts 1 - 3 are run iteratively on each embl database folder (e.g. if you downloaded and obitools converted four embl database floders you will run Parts 1-3 on each folder independently).
+
+###Part 1: ecoPCR
 
 1. Run ecoPCR using the user specified primer on the user generated OBItools compatible embl databases.  
 	* ecoPCR parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
@@ -110,25 +112,54 @@ Part 1: ecoPCR
 	* Primers are not removed during this step.
 3. Using cutadapt, verify and retain only the ecoPCR reads with correct primer seqeunces, then trim the primers from the 5' and 3' ends.
 	
-Part 2: blasting
+###Part 2: blasting
 
 1. The fasta files are blasted against the the NCBI nucleotide blast databases using blastn. 
 	* blastn parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
+	* default parameters are
+	     * e-value = 0.0000000001	
+	     * minimum percent of subject that needs to be covered by the query = 70%
+	     * minimum percent identity of the query relative to the subject = 60%
+	     * maximum number of hits to retain per subject = 1500
+	     * number of threads to launch = 100
+	     
 2. The blast results are de-replicated by NCBI accession version number and converted into fasta format.
+
 3. entrez-qiime is then used to determine taxonomy for each read based on NCBI version accession number. 
+
 4. All reads with low resoluiton taxonomy (e.g NA;NA;NA at the beginning of the taxonomic path, or those assignmed uncultured, unknown, unassigned, or environmental) are removed from the cleaned blast results fasta output and corresponding taxonomy file.
 	
-Part 3: Clustering
+###Part 3: Clustering for percent similarity
 
-1. Reduce the dataset to read clusters with 99% identity using usearch, implemented in Qiime
-	* The user can change the identity threshold in the /crux_release_V1_db/crux_vars.sh file
-	* Clustering at 99% reduces the size of the dataset and collapses reads that are identical and nearly identical.
-2. Assign taxonomy at 97% using uclust, implemented in Qiime
-	* The user can change the identity threshold in the /crux_release_V1_db/crux_vars.sh file
-	* Assigning taxonomy at 97% reduces the number of unassignable reads in the resulting database
-		* When there are several species with in the same genus, assigning reads at 99% generates many unassigned reads, however when clustered at 97% the reads formerly unassigned are typically correctly assigned to genus.  
+1. The resulting blastn hits results dereplicated and clustered at different percent simirity (99, 97, 95, 90, 85, 80) identity using usearch, implemented in Qiime
+	* Clustering databases at different percent identity is critical for running the bowtie2 taxonomy step of the Anacapa pipeline. 	
+	
+2. Assign taxonomy with uclust using the corresponding similarity used to culster the seqeuncing reads.  
+
+3. Remove any unassigned reads from the fasta and corresponding taxonomy file.
+
+
+
+###Part 4. Merge reads for a given similarity
+
+1. Rename fasta reads and the corresponding taxonomy to reflect the embl database used to generate the initail blast seed library.
+
+2. Merge all of the the fasta reads and all of the corresponding taxonomy generated for a given similarity.
+
+3. Run usearch at 99% on the dataset, retaining the dereplicated reads.
+
+4. Assign taxonomy with uclust at 99%.
+
+5. Remove any unassigned reads from the fasta and corresponding taxonomy file.
+
+6. The resulting files are the reference final databases.
+
+	
+###Part 5. Generate Bowtie2 index libraries
+
+1. Build bowtie2 index libraries for each of the final fasta files
 		
-Part 4: **pending**
+**pending**
 * multiple sequence alignment
 * phylogenetic tree 
 * detailed log files
