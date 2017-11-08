@@ -88,7 +88,7 @@ Next steps: The reference library can then be used to generate a multiple sequen
 * Depending on the size of the EMBL database files this may take a lot of time and a lot of RAM
 * The command is as follows:
 	* obiconvert -t </path/to/taxonfile> --embl --ecopcrdb-output=/path/to/output /path/to/inputs --skip-on-error
-		* e.g. obiconvert -t ~/crux_release_V1_db/TAXO --embl --ecopcrdb-output= ~/crux_release_V1_db/Obitools_databases/EMBL_6167017_std_pro ~/EMBL_pro/*.dat
+		* e.g. obiconvert -t ~/crux_release_V1_db/TAXO --embl --ecopcrdb-output=~/crux_release_V1_db/Obitools_databases/EMBL_6167017_std_pro ~/EMBL_pro/*.dat --skip-on-error
   
   
 ## Running CRUX
