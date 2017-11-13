@@ -47,7 +47,7 @@ source $DB/scripts/crux_vars.sh
 source $DB/scripts/crux_config.sh
 ${MODULE_SOURCE}
 ${QIIME}
-${BOWTIE@}
+${BOWTIE2}
 
 echo " "
 echo "in the case of failure check, that your the config file is accurate: $DB/crux_config.sh" 
@@ -150,165 +150,42 @@ echo " "
 echo " "
 echo "Part 3.1: Cleaning up blast results" 
 echo "For each set of BLAST results"
-echo "     De-replicate by NCBI accession version numbers, and convert to fasta format."
+echo "     Merge and De-replicate by NCBI accession version numbers, and convert to fasta format."
 echo "     Then use entrez-qiime to generate a corresponding taxonomy file, and clean the blast output and taxonomy file to eliminate poorly annotated sequences." 
-mkdir -p ${ODIR}/${NAME}_first_cluster_step/
-mkdir -p ${ODIR}/${NAME}_first_cluster_step/clean_up_first_cluster/
-mkdir -p ${ODIR}/${NAME}_second_cluster_step
-mkdir -p ${ODIR}/${NAME}_second_cluster_step/clean_first_cluster
-###
-for str in ${ODIR}/${NAME}_BLAST/${NAME}_*_BLAST_out.txt
-do
- str1=${str%_BLAST_out.txt}
- j=${str1#${ODIR}/${NAME}_BLAST/}
- echo " "
- echo "...Processing ${j} blast output"
- cat ${str1}_BLAST_out.txt  | sed "s/-//g"| awk -F"\t" '!_[$1]++' |awk 'BEGIN { FS="\t"; } {print ">"$1"\n"$3}' > ${str1}_dirty_dereplicated_BLAST.fasta
- echo "...Running ${j} entrez-qiime" 
- python ${ENTREZ_QIIME} -i ${str1}_dirty_dereplicated_BLAST.fasta -o ${str1}_dirty_dereplicated_BLAST_taxonomy -n ${TAXO} -a ${A2T} 
- mkdir -p ${ODIR}/${NAME}_first_cluster_step/${j}
- python ${DB}/scripts/clean_blast.py ${str1}_dirty_dereplicated_BLAST.fasta ${ODIR}/${NAME}_first_cluster_step/${j}/${j}_dereplicated_BLAST.fasta ${str1}_dirty_dereplicated_BLAST_taxonomy.txt ${ODIR}/${NAME}_first_cluster_step/${j}/${j}_dereplicated_BLAST_taxonomy.txt
- echo "... ${j} blast output is ready for the next step"
- date
-done
-### Cycle through the clean blast output for each of the percent identity uclusts
-# for uclust in uslusts...
-echo " "
-echo "Part 3.2:" 
-echo "Run Qiime Pick OTUS and Assign Taxonomy on the cleaned ${NAME} BLAST results with the following parameters:" 
-echo "     Pick OTUs "
-echo "               = ${METHOD_OTU} Clustering method at ${METHOD_OTU}"
-echo "               = Read sorting method is ${USEARCH61_SORT_METHOD}"
-echo "               = Minimum number of reads per cluster is ${MINSIZE}"
-echo "     Assign Taxonomy "
-echo "               = ${METHOD_AT} Clustering method at ${UCLUST_SIMILARITY}"
-echo "               = Percent similarity within clusters is ${UCLUST_SIMILARITY}"
-echo "               = Maximum number of references that can match to a cluster is ${UCLUST_MIN_CONSENSUS_FRACTION}"
-echo "               = Minimum percent of taxonomic consensus needed for taxonomy assignment is ${UCLUST_MIN_CONSENSUS_FRACTION}"
-echo "If this is not what you want, then modify ${DB}/scripts/crux_vars.sh"
-echo " "
-for perc in ${SIM}
- do
- echo "##################Clustering reads at ${perc}##################"
-# do the following
- for str in ${ODIR}/${NAME}_BLAST/${NAME}_*_BLAST_out.txt
- do
-  str1=${str%_BLAST_out.txt}
-  j=${str1#${ODIR}/${NAME}_BLAST/} 
-  echo " "
-  echo "****for reads in ${j}****"
-  echo "...Running Pick OTUs"
-  pick_otus.py -m ${METHOD_OTU} --usearch61_sort_method ${USEARCH61_SORT_METHOD} -i ${ODIR}/${NAME}_first_cluster_step/${j}/${j}_dereplicated_BLAST.fasta -o ${ODIR}/${NAME}_first_cluster_step/${j}/${j}_dereplicated_BLAST_${METHOD_OTU}_${perc} -s ${perc} --suppress_reference_chimera_detection --minsize ${MINSIZE} --enable_rev_strand_match 
-  echo "...Pick OTUs is finished"
-  date
-  echo " "
-  echo "...Running Assign Taxonomy"
-  assign_taxonomy.py -i ${ODIR}/${NAME}_first_cluster_step/${j}/${j}_dereplicated_BLAST_${METHOD_OTU}_${perc}/dereplicated_seqs.fasta -o ${ODIR}/${NAME}_first_cluster_step/${j}/${NAME}_dereplicated_BLAST_assign_taxonomy_${METHOD_AT}_${perc} -r ${ODIR}/${NAME}_first_cluster_step/${j}/${j}_dereplicated_BLAST.fasta -t ${ODIR}/${NAME}_first_cluster_step/${j}/${j}_dereplicated_BLAST_taxonomy.txt  -m ${METHOD_AT} --uclust_min_consensus_fraction ${UCLUST_MIN_CONSENSUS_FRACTION} --uclust_max_accepts ${UCLUST_MAX_ACCEPT} --uclust_similarity ${perc} 
-  echo "...Assign Taxonomy is finished"
-  date
-  echo " "
-  echo "...Clean up taxonomy files"
-  python ${DB}/scripts/clean_blast.py ${ODIR}/${NAME}_first_cluster_step/${j}/${j}_dereplicated_BLAST_${METHOD_OTU}_${perc}/dereplicated_seqs.fasta ${ODIR}/${NAME}_first_cluster_step/clean_up_first_cluster/${j}_first_cluster_unclean_${perc}.fasta ${ODIR}/${NAME}_first_cluster_step/${j}/${NAME}_dereplicated_BLAST_assign_taxonomy_${METHOD_AT}_${perc}/dereplicated_seqs_tax_assignments.txt ${ODIR}/${NAME}_first_cluster_step/clean_up_first_cluster/${j}_first_cluster_taxonomy_unclean_${perc}.txt
-  echo "...Taxonomy is clean"
-  echo " "
-  done
-done
-#### modify taxonomy and fasta files so that when they are merged they are unique
-echo " "
-echo " "
-for str in ${ODIR}/${NAME}_first_cluster_step/clean_up_first_cluster/*_first_cluster_taxonomy_unclean_*.txt
-  do
-  str1=${str%.txt}
-  j=${str1#${ODIR}/${NAME}_first_cluster_step/clean_up_first_cluster/*_first_cluster_taxonomy_unclean_}
-  str2=${str%_first_cluster_taxonomy_unclean_*.txt}
-  k=${str2#${ODIR}/${NAME}_first_cluster_step/clean_up_first_cluster/}
-  python ${DB}/scripts/rname_tax_fix.py ${str1}.txt ${ODIR}/${NAME}_second_cluster_step/clean_first_cluster/${k}_first_cluster_taxonomy_${j}.txt ${k}
-  sed -s  "s/>/>${k}/g" ${ODIR}/${NAME}_first_cluster_step/clean_up_first_cluster/${k}_first_cluster_unclean_${j}.fasta > ${ODIR}/${NAME}_second_cluster_step/clean_first_cluster/${k}_first_cluster_${j}.fasta
-done
-###
-echo " "
-echo " "
-echo "Part 4.1:" 
-echo "Run Qiime Pick OTUS and Assign Taxonomy on the merged ${NAME} references libraries with the following parameters:" 
-echo "     Pick OTUs = ${FMETHOD_OTU} Clustering method at ${FUSEARCH_SIM}"
-echo "               = Read sorting method is ${FUSEARCH61_SORT_METHOD}"
-echo "               = Minimum number of reads per cluster is ${FMINSIZE}"
-echo "     Assign Taxonomy = ${FMETHOD_AT} Clustering method at ${FUCLUST_SIMILARITY}"
-echo "                     = Percent similarity within clusters is ${FUCLUST_SIMILARITY}"
-echo "                     = Maximum number of references that can match to a cluster is ${FUCLUST_MIN_CONSENSUS_FRACTION}"
-echo "                     = Minimum percent of taxonomic consensus needed for taxonomy assignment is ${FUCLUST_MIN_CONSENSUS_FRACTION}"
-echo "If this is not what you want, then modify ${DB}/scripts/crux_vars.sh"
-echo " "
-###
-for perc in ${SIM}
- do
- cat ${ODIR}/${NAME}_second_cluster_step/clean_first_cluster/*_first_cluster_${perc}.fasta > ${ODIR}/${NAME}_second_cluster_step/clean_first_cluster/merged_first_cluster_${perc}.fasta
- cat ${ODIR}/${NAME}_second_cluster_step/clean_first_cluster/*_first_cluster_taxonomy_${perc}.txt > ${ODIR}/${NAME}_second_cluster_step/clean_first_cluster/merged_first_cluster_taxonomy_${perc}.txt
- for str in ${ODIR}/${NAME}_second_cluster_step/clean_first_cluster/merged_first_cluster_taxonomy_${perc}.txt
-  do
-  echo "##################For reads at ${perc}##################"
-  echo "...Run Pick OTUs"
-  pick_otus.py -m ${FMETHOD_OTU} --usearch61_sort_method ${FUSEARCH61_SORT_METHOD} -i ${ODIR}/${NAME}_second_cluster_step/clean_first_cluster/merged_first_cluster_${perc}.fasta -o ${ODIR}/${NAME}_second_cluster_step/${NAME}_merged_pick_otus_${perc} -s ${FUSEARCH_SIM} --suppress_reference_chimera_detection --minsize ${FMINSIZE} --enable_rev_strand_match 
-  echo "...Pick OTUs is finished"
-  date
-  ###
-  echo ""
-  echo "...Running Assign Taxonomy"
-  assign_taxonomy.py -i ${ODIR}/${NAME}_second_cluster_step/${NAME}_merged_pick_otus_${perc}/dereplicated_seqs.fasta -o ${ODIR}/${NAME}_second_cluster_step/${NAME}_merged_assign_taxonomy_${perc} -r ${ODIR}/${NAME}_second_cluster_step/clean_first_cluster/merged_first_cluster_${perc}.fasta -t ${ODIR}/${NAME}_second_cluster_step/clean_first_cluster/merged_first_cluster_taxonomy_${perc}.txt  -m ${FMETHOD_AT} --uclust_min_consensus_fraction ${FUCLUST_MIN_CONSENSUS_FRACTION} --uclust_max_accepts ${FUCLUST_MAX_ACCEPT} --uclust_similarity ${FUCLUST_SIMILARITY} 
-  echo "...Assign Taxonomy is finished"
-  date
-  echo ""
- done
-done
-###
+mkdir -p ${ODIR}/${NAME}_fasta_and_taxonomy/
+mkdir -p ${ODIR}/${NAME}_fasta_and_taxonomy/dirty
+### merge and clean blast data
+cat ${ODIR}/${NAME}_BLAST/*_BLAST_out.txt  | sed "s/-//g"| awk -F"\t" '!_[$1]++' |awk 'BEGIN { FS="\t"; } {print ">"$1"\n"$3}' >> ${ODIR}/${NAME}_fasta_and_taxonomy/dirty/${NAME}_dirty.fasta
+echo "...Running ${j} entrez-qiime and cleaning up fasta and taxonomy files" 
+python ${ENTREZ_QIIME} -i ${ODIR}/${NAME}_fasta_and_taxonomy/dirty/${NAME}_dirty.fasta -o ${ODIR}/${NAME}_fasta_and_taxonomy/dirty/${NAME}_dirty_taxonomy -n ${TAXO} -a ${A2T} 
+python ${DB}/scripts/clean_blast.py ${ODIR}/${NAME}_fasta_and_taxonomy/dirty/${NAME}_dirty.fasta ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_.fasta ${ODIR}/${NAME}_fasta_and_taxonomy/dirty/${NAME}_dirty_taxonomy.txt ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt
+python ${DB}/scripts/tax_fix.py ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt.tmp
+grep '[^[:blank:]]'  ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt.tmp > ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt
+rm ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt.tmp
+echo "... ${j} final fasta and taxonomy database complete"
+
 
 ##########################
-# Part 5: Move the final files to the cleaned data
+# Part 4: Turn the reference libraries into Bowtie2 searchable libraries
 ##########################
+
 echo " "
 echo " "
 echo "Part 5:" 
-echo "The final ${NAME} taxonomy and fasta database files can be found in the ${NAME}_final_database folder in ${ODIR}:" 
-mkdir -p ${ODIR}/${NAME}_final_database
-for perc in ${SIM}
- do
- python ${DB}/scripts/clean_blast.py ${ODIR}/${NAME}_second_cluster_step/${NAME}_merged_pick_otus_${perc}/dereplicated_seqs.fasta ${ODIR}/${NAME}_final_database/${NAME}_${perc}.fasta ${ODIR}/${NAME}_second_cluster_step/${NAME}_merged_assign_taxonomy_${perc}/dereplicated_seqs_tax_assignments.txt ${ODIR}/${NAME}_final_database/${NAME}_taxonomy_${perc}.txt
- python ${DB}/scripts/tax_fix.py ${ODIR}/${NAME}_final_database/${NAME}_taxonomy_${perc}.txt ${ODIR}/${NAME}_final_database/${NAME}_taxonomy_${perc}.txt.tmp
- cp ${ODIR}/${NAME}_final_database/${NAME}_taxonomy_${perc}.txt.tmp ${ODIR}/${NAME}_final_database/${NAME}_taxonomy_${perc}.txt
- rm ${ODIR}/${NAME}_final_database/${NAME}_taxonomy_${perc}.txt.tmp
- date
- echo " "
- echo " "
-done
-###
-
-
-##########################
-# Part 6: Turn the reference libraries into Bowtie2 searchable libraries
-##########################
-
-echo " "
-echo " "
-echo "Part 6:" 
 echo "The bowtie2 database files for ${NAME} can be found in the ${NAME}_bowtie2_databases folder in ${ODIR}:" 
-mkdir -p ${ODIR}/${NAME}_bowtie2_databases
-for perc in ${SIM}
- do
- mkdir -p ${ODIR}/${NAME}_bowtie2_databases/${NAME}_bowtie2_${perc}
- bowtie2-build -f ${ODIR}/${NAME}_final_database/${NAME}_${perc}.fasta ${ODIR}/${NAME}_bowtie2_databases/${NAME}_bowtie2_${perc}/${NAME}_${perc}_bowtie2_index
- date
- echo " "
- echo " "
-done
-
+mkdir -p ${ODIR}/${NAME}_bowtie2_database
+bowtie2-build -f ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_.fasta ${ODIR}/${NAME}_bowtie2_database/${NAME}_bowtie2_index
+date
+echo " "
+echo " "
 
 ##########################
-# Part 7: Delete the intermediate steps
+# Part 5: Delete the intermediate steps
 ##########################
 
 echo " "
 echo " "
-echo "Part 7:" 
+echo "Part 5:" 
 echo "Deleting the intermediate files: ${CLEAN}" 
 if [ ${CLEAN} = "n" ]
  then
@@ -321,10 +198,6 @@ if [ ${CLEAN} = "n" ]
     echo "...${NAME} BLAST directory"
     rmdir ${ODIR}/${NAME}_BLAST
     echo "...${NAME} first cluster step directory"
-	rmdir ${ODIR}/${NAME}_first_cluster_step/
-	echo "...${NAME} second cluster step directory"
-	rmdir ${ODIR}/${NAME}_second_cluster_step
-	echo "Deletion is finished"
  else
     echo "-c variable not recognized, nothing to delete"
 fi
