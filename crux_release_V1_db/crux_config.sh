@@ -1,28 +1,33 @@
-# Config file for CRUX_release_V1		09-01-2017
-# Written by Emily Curd (eecurd@g.ucla.edu) and Gaurav Kandlikar (gkandlikar@ucla.edu)
+# Config file for CRUX_release_V1		11-13-2017
+# Written by Emily Curd (eecurd@g.ucla.edu), Gaurav Kandlikar (gkandlikar@ucla.edu), and Jesse Gomer (jessegomer@gmail.com)
 # Developed at UCLA for the University of California Conservation Consortium's CALeDNA Program
-
-
 
 #############################
 # Paths to programs / load programs
 #############################
 
+# load modules
+MODULE_SOURCE="source /u/local/Modules/default/init/bash" 	#if none, leave empty <- for HPC
+
+#load cutadapt
+CUTADAPT="/u/local/apps/python/2.7.13/bin/cutadapt" 		#path to cutadapt binary. see documentation for how to obtain this script
+
+#load fastx_toolkit
+FASTX_TOOLKIT="module load fastx_toolkit"				#or what ever code is used to load fastx_toolkit in a bash shell, or path to fastx_toolkit 
+
 #entrez-qiime
-ENTREZ_QIIME="${DB}/entrez_qiime.py" 						#path to python script. see documentation for how to obtain this script
+ENTREZ_QIIME="${DB}/scripts/entrez_qiime.py" 						#path to python script. see documentation for how to obtain this script
 
 #ecoPCR
 ecoPCR="${DB}/ecoPCR/src/ecoPCR"							#path to executable. see documentation for how to obtain this program,
 
 #Load / run BLASTn
-MODULE_SOURCE="" 											#if none, leave empty <- for HPC
 LOAD_BLAST="" 												#if none, leave empty <- for HPC
 BLASTn_CMD="${DB}/ncbi-blast-2.6.0+/bin/blastn" 			#either the path to the blastn executable or just blastn if it is loaded or already in your path
 
 
 #Load / run Qiime
-MODULE_SOURCE="source /u/local/Modules/default/init/bash" 	#if none, leave empty <- for HPC
-LOAD_QIIME="module load qiime" 								#or what ever code is used to load qiime in a bash shell (e.g. on a mac it might be "macqiime")
+QIIME="module load qiime" 								#or what ever code is used to load qiime in a bash shell (e.g. on a mac it might be "macqiime")
 
 BOWTIE2="module load bowtie2"								#or what ever code is used to load bowtie2 in a bash shell 
 
