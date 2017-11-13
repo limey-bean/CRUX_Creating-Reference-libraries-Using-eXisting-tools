@@ -6,7 +6,7 @@
 
 ## Introduction
   
-Taxonomic assignments of metabarcoding reads requires a comprehensive reference library. For 16S and 18S metabarcode reads, we use the Silva high quality ribosomal databases (Glöckner et al., 2017) for reference libraries, with slight modification. For all other metabarcodes we construct custom reference libraries using our in-house wrapper script, **CRUX**: **C**onstructing **R**eference libraries **U**sing e**X**isting tools. CRUX generates reference libraries by running in silico PCR (**ecoPCR**; Ficetola et al., 2010) against the EMBL standard nucleotide sequence database (Stoesser et al., 2002) to generate a seed library of reads with unique taxon identifiers. We verify that the seed library reads match the amplicon by checking for primer regions and trimming them using **cutadapt** (Martin, 2011).  Because many sequencing records are deposited to Genbank (Benson et al., 2012) with the primer regions removed from the read, we **BLAST** (Camacho et al., 2009) the seed library against the NCBI nucleotide blast database (ftp://ftp.ncbi.nlm.nih.gov/blast/). Blast results are de-replicated by version accession number and converted to fasta format. A taxonomy identification file is generated from the fasta formatted blast output using **entrez-qiime** (https://github.com/bakerccm/entrez_qiime), the NCBI’s taxonomy dump and map of association between taxonomy and accession version numbers (ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/). The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Anacapa) iteratively runs **Bowtie2** (Langmead et al., 2009) to assigns reads to references databases clustered at decreasing similairy (99, 97, 95, 90, 85, 80 percent).  There databases are generated using **Qiime** (Caporaso et al., 2010) to cluster the reference library at 99, 97, 95, 90, 85, 80 percent sequence similarity using **Usearch** (Edgar, 2010) and generate a corresponding taxonomy file assign taxonomy in **Qiime** using **Uclust** (Edgar, 2010). The final step is to reformat the reference reads into **Bowtie2** formatted data index libraries.
+Taxonomic assignments of metabarcoding reads requires a comprehensive reference library. For 16S and 18S metabarcode reads, we use the Silva high quality ribosomal databases (Glöckner et al., 2017) for reference libraries, with slight modification. For all other metabarcodes we construct custom reference libraries using our in-house wrapper script, **CRUX**: **C**onstructing **R**eference libraries **U**sing e**X**isting tools. CRUX generates reference libraries by running in silico PCR (**ecoPCR**; Ficetola et al., 2010) against the EMBL standard nucleotide sequence database (Stoesser et al., 2002) to generate a seed library of reads with unique taxon identifiers. We verify that the seed library reads match the amplicon by checking for primer regions and trimming them using **cutadapt** (Martin, 2011).  Because many sequencing records are deposited to Genbank (Benson et al., 2012) with the primer regions removed from the read, we **BLAST** (Camacho et al., 2009) the seed library against the NCBI nucleotide blast database (ftp://ftp.ncbi.nlm.nih.gov/blast/). Blast results are de-replicated by version accession number and converted to fasta format. A taxonomy identification file is generated from the fasta formatted blast output using **entrez-qiime** (https://github.com/bakerccm/entrez_qiime), the NCBI’s taxonomy dump and map of association between taxonomy and accession version numbers (ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/). The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Anacapa)runs **Bowtie2** (Langmead et al., 2009) to assigns reads to these references databases and generate a corresponding taxonomy file. Thus the final step is to reformat the reference reads into **Bowtie2** formatted data index libraries.
 
 Next steps: The reference library can then be used to generate a multiple sequence alignment and a phylogenetic tree using (decide, ask Tyler...). 
 
@@ -34,12 +34,7 @@ Next steps: The reference library can then be used to generate a multiple sequen
 5. entrez_qiime: https://github.com/bakerccm/entrez_qiime
 	* **entrez_qiime.py** is already included in crux_release_V1_db folder
 
-6. Qiime 1: http://qiime.org/index.html
-	* Qiime 1 does not need to be installed in the crux_release_V1_db folder, however you will need to verify that the Crux_config.sh is modified for you computing environment. 
-	* Installation information can be found here: http://qiime.org/install/install.html
-	* We will transition to Qiime 2 by January 01, 2018. 
-	
-7. Bowtie2: http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+6. Bowtie2: http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
 	* Bowtie2 does not need to be installed in the crux_release_V1_db folder, however you will need to verify that the Crux_config.sh is modified for you computing environment. 
   
   
@@ -118,30 +113,20 @@ Parts 1 - 3 are run iteratively on each embl database folder (e.g. if you downlo
 	     * minimum percent of subject that needs to be covered by the query = 70%
 	     * minimum percent identity of the query relative to the subject = 60%
 	     * maximum number of hits to retain per subject = 1500
-	     * number of threads to launch = 100
-2. The blast results are de-replicated by NCBI accession version number and converted into fasta format.
-3. entrez-qiime is then used to determine taxonomy for each read based on NCBI version accession number. 
-4. All reads with low resolution taxonomy (e.g NA;NA;NA at the beginning of the taxonomic path, or those assigned uncultured, unknown, unassigned, or environmental) are removed from the cleaned blast results fasta output and corresponding taxonomy file.
+	     * number of threads to launch = 100 
 	
-### Part 3: Clustering for percent similarity
-1. The resulting blastn hits results de-replicated and clustered at different percent similarity (99, 97, 95, 90, 85, 80) identity using usearch, implemented in Qiime
-	* Clustering databases at different percent identity is critical for running the bowtie2 taxonomy step of the Anacapa pipeline. 	
-2. Assign taxonomy with uclust using the corresponding similarity used to culster the sequencing reads.  
-3. Remove any unassigned reads from the fasta and corresponding taxonomy file.
+### Part 3: Cleaning up blast results 
+1. The blast results are de-replicated by NCBI accession version number and converted into fasta format.
+2. entrez-qiime is then used to determine taxonomy for each read based on NCBI version accession number. 
+3. All reads with low resolution taxonomy (e.g NA;NA;NA at the beginning of the taxonomic path, or those assigned uncultured, unknown, unassigned, or environmental) are removed from the cleaned blast results fasta output and corresponding taxonomy file.
 
-### Part 4. Merge reads for a given similarity
-1. Rename fasta reads and the corresponding taxonomy to reflect the embl database used to generate the initial blast seed library.
-2. Merge the fasta reads and all of the corresponding taxonomy generated for a given similarity.
-3. Run usearch at 99% on the dataset, retaining the de-replicated reads.
-4. Assign taxonomy with uclust at 99%.
-5. Remove any unassigned reads from the fasta and corresponding taxonomy file.
-6. The resulting files are the reference final databases.
-
-	
-### Part 5. Generate Bowtie2 index libraries
+### Part 4. Generate Bowtie2 index libraries
 
 1. Build bowtie2 index libraries for each of the final fasta files
 		
+
+### Part 5. Remove intermediate steps
+
 **pending**
 * multiple sequence alignment
 * phylogenetic tree 
@@ -149,14 +134,7 @@ Parts 1 - 3 are run iteratively on each embl database folder (e.g. if you downlo
 * summary statistic files
 * script that checks that the user has the dependencies
 
-  
-  
-  
-  
-  
-  
-  
-  
+
 ## References:
 
 Benson, D.A., Cavanaugh, M., Clark, K., Karsch-Mizrachi, I., Lipman, D.J., Ostell, J. and Sayers, E.W., 2012. GenBank. Nucleic acids research, 41(D1), pp.D36-D42.
