@@ -21,7 +21,7 @@ while getopts "n:f:r:l:m:o:d:c:" opt; do
         ;;
         l) SHRT="$OPTARG"
         ;;
-		m) LNG="$OPTARG"
+	m) LNG="$OPTARG"
         ;;
         o) ODIR="$OPTARG"
         ;;
