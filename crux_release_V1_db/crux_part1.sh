@@ -1,7 +1,7 @@
 #! /bin/bash
 
 ### this script is run as follows
-# sh ~/crux_release_V1_from_blast_out.sh -n <primer_name> -f <forward_primer> -r <reverse_primer> -l <shortest amplicon expected> -m <longest amplicon expected> -o <output_directory> -d <database_directory> -c <clean up intermediate files y/n>
+# sh ~/crux_release_V1_from_blast_out.sh -n <primer_name> -f <forward_primer> -r <reverse_primer> -l <shortest amplicon expected> -m <longest amplicon expected> -o <output_directory> -d <database_directory> -c <clean up intermediate files y/n> -h <user>
 NAME=""
 FP=""
 RP=""
@@ -10,8 +10,9 @@ DB=""
 SHRT=""
 LNG=""
 CLEAN=""
+UN=""
 
-while getopts "n:f:r:l:m:o:d:c:" opt; do
+while getopts "n:f:r:l:m:o:d:c:h:" opt; do
     case $opt in
         n) NAME="$OPTARG"
         ;;
@@ -21,13 +22,15 @@ while getopts "n:f:r:l:m:o:d:c:" opt; do
         ;;
         l) SHRT="$OPTARG"
         ;;
-	m) LNG="$OPTARG"
+	    m) LNG="$OPTARG"
         ;;
         o) ODIR="$OPTARG"
         ;;
         d) DB="$OPTARG"
         ;;
         c) CLEAN="$OPTARG"
+        ;;
+        h) UN="$OPTARG"
         ;;
     esac
 done
@@ -51,9 +54,19 @@ ${BOWTIE2}
 
 echo " "
 echo "in the case of failure check, that your the config file is accurate: $DB/crux_config.sh" 
+##########################-d
+# Part 1: ecoPCR
+##########################
+mkdir -p ${ODIR}/blast_jobs
+mkdir -p ${ODIR}/blast_logs
+
+
+echo " "
+echo "in the case of failure check, that your the config file is accurate: $DB/crux_config.sh" 
 ##########################
 # Part 1: ecoPCR
 ##########################
+
 echo " "
 echo " "
 echo "Part 1.1:"
@@ -95,17 +108,42 @@ do
  echo "..."${j}" is clean"
 date
 done
+
+
 ### if file 0b discard?code from https://www.cyberciti.biz/faq/linux-unix-script-check-if-file-empty-or-not/
 ## loop through ecoPCR results
 for str in ${ODIR}/${NAME}_ecoPCR/cleaned/*_ecoPCR_blast_input_a_and_g_clean.fasta
 do
+ str1=${str%_ecoPCR_blast_input_a_and_g_clean.fasta}
+ j=${str1#${ODIR}/${NAME}_ecoPCR/cleaned/}
+ mkdir -p ${ODIR}/${NAME}_ecoPCR/cleaned/${j}
+ mkdir -p ${ODIR}/${NAME}_BLAST/
+ mkdir -p ${ODIR}/${NAME}_BLAST/${j}_BLAST_out
+ mkdir -p ${ODIR}/${NAME}_BLAST/${j}_BLAST_out/raw
+ mkdir -p ${ODIR}/${NAME}_BLAST/${j}_BLAST_out/fasta
  [ $# -eq 0 ] && { echo "Usage: $0 filename"; exit 1; }
  [ ! -f "${str}" ] && { echo "Error: $0 file not found."; exit 2; }
  if [ -s "${str}" ] 
   then
   echo " "
   echo "${str} has ecoPCR reads that passed the minimum criteria to move to the next step."
+  # split ecopcr output into files with 500 reads each
+  split -l 1000 ${str} ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_
     # do something as file has data
+    i = 1
+    for nam in {ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_*
+	do
+     # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
+     cp ${nam} ${nam}_${i}
+	 i = i+1  
+    done
+  	for st in ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_*
+	do
+     l=${st#${ODIR}/${NAME}_ecoPCR/cleaned/${j}/}
+     # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
+     printf "#!/bin/bash\n#$ -l highp,h_rt=04:00:00,h_data=22G\n#$ -N blast_${l}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/${j}_paired.out\n#$ -e ${ODIR}/blast_logs/${j}_paired.err \n\n\n sh ${DB}/scripts/sub_blast.sh -n ${NAME} -q ${st} -o ${ODIR} -j ${j} -l ${l} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_${l}.sh
+	 qsub ${ODIR}/blast_jobs/${j}_${l}.sh   
+    done
  else
   echo " "
   echo "${str} did not pass the minimum criteria that passes ecoPCR reads to the next step."
@@ -115,92 +153,3 @@ do
  fi
 done 
 ###
-
-##########################
-# Part 2: blasting
-##########################
-echo " "
-echo " "
-echo "Part 2:" 
-echo "Run blast with ${NAME} ecoPCR results and these parameters:" 
-echo "     BLAST e-value = ${BLAST_eVALUE}"
-echo "     number of threads = ${BLAST_NUM_THREADS}"
-echo "     minimum percent identity for a genbank read that aligns to an ecoPCR generated sequences = ${BLAST_PERC_IDENTITY}"
-echo "     minimum percent of coverage length for a genbank read that aligns to an ecoPCR generated sequence= ${BLAST_HSP_PERC}"
-echo "     number of alignments to include in the output = ${BLAST_NUM_ALIGNMENTS}"
-echo "If this is not what you want, then modify ${DB}/scripts/crux_vars.sh"
-mkdir -p ${ODIR}/${NAME}_BLAST
-${LOAD_BLAST}
-for str in ${ODIR}/${NAME}_ecoPCR/cleaned/*_ecoPCR_blast_input_a_and_g_clean.fasta
-do
- str1=${str%_ecoPCR_blast_input_a_and_g_clean.fasta}
- j=${str1#${ODIR}/${NAME}_ecoPCR/cleaned/}
- echo "..."${j}" is running"
- ${BLASTn_CMD} -query ${str} -out ${ODIR}/${NAME}_BLAST/${j}_BLAST_out.txt -db ${BLAST_DB} -evalue ${BLAST_eVALUE} -outfmt "6 saccver staxid sseq" -num_threads ${BLAST_NUM_THREADS} -perc_identity ${BLAST_PERC_IDENTITY} -qcov_hsp_perc ${BLAST_HSP_PERC} -num_alignments ${BLAST_NUM_ALIGNMENTS} -gapopen 1 -gapextend 1
- echo "..."${j}" is finished"
-date
-done
-###
-
-
-##########################
-# Part 3: Cleaning up blast results
-##########################
-echo " "
-echo " "
-echo "Part 3.1: Cleaning up blast results" 
-echo "For each set of BLAST results"
-echo "     Merge and De-replicate by NCBI accession version numbers, and convert to fasta format."
-echo "     Then use entrez-qiime to generate a corresponding taxonomy file, and clean the blast output and taxonomy file to eliminate poorly annotated sequences." 
-mkdir -p ${ODIR}/${NAME}_fasta_and_taxonomy/
-mkdir -p ${ODIR}/${NAME}_fasta_and_taxonomy/dirty
-### merge and clean blast data
-cat ${ODIR}/${NAME}_BLAST/*_BLAST_out.txt  | sed "s/-//g"| awk -F"\t" '!_[$1]++' |awk 'BEGIN { FS="\t"; } {print ">"$1"\n"$3}' >> ${ODIR}/${NAME}_fasta_and_taxonomy/dirty/${NAME}_dirty.fasta
-echo "...Running ${j} entrez-qiime and cleaning up fasta and taxonomy files" 
-python ${ENTREZ_QIIME} -i ${ODIR}/${NAME}_fasta_and_taxonomy/dirty/${NAME}_dirty.fasta -o ${ODIR}/${NAME}_fasta_and_taxonomy/dirty/${NAME}_dirty_taxonomy -n ${TAXO} -a ${A2T} 
-python ${DB}/scripts/clean_blast.py ${ODIR}/${NAME}_fasta_and_taxonomy/dirty/${NAME}_dirty.fasta ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_.fasta ${ODIR}/${NAME}_fasta_and_taxonomy/dirty/${NAME}_dirty_taxonomy.txt ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt
-python ${DB}/scripts/tax_fix.py ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt.tmp
-grep '[^[:blank:]]'  ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt.tmp > ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt
-rm ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt.tmp
-echo "... ${j} final fasta and taxonomy database complete"
-
-
-##########################
-# Part 4: Turn the reference libraries into Bowtie2 searchable libraries
-##########################
-
-echo " "
-echo " "
-echo "Part 5:" 
-echo "The bowtie2 database files for ${NAME} can be found in the ${NAME}_bowtie2_databases folder in ${ODIR}:" 
-mkdir -p ${ODIR}/${NAME}_bowtie2_database
-bowtie2-build -f ${ODIR}/${NAME}_fasta_and_taxonomy/${NAME}_.fasta ${ODIR}/${NAME}_bowtie2_database/${NAME}_bowtie2_index
-date
-echo " "
-echo " "
-
-##########################
-# Part 5: Delete the intermediate steps
-##########################
-
-echo " "
-echo " "
-echo "Part 5:" 
-echo "Deleting the intermediate files: ${CLEAN}" 
-if [ ${CLEAN} = "n" ]
- then
-    echo "nothing to delete"
- elif [ ${CLEAN} = "y" ]
- then
-    echo "Deleting"
-    echo "...${NAME} ecoPCR directory"
-    rmdir ${ODIR}/${NAME}_ecoPCR
-    echo "...${NAME} BLAST directory"
-    rmdir ${ODIR}/${NAME}_BLAST
-    echo "...${NAME} first cluster step directory"
- else
-    echo "-c variable not recognized, nothing to delete"
-fi
-date
-echo " "
-echo " "
