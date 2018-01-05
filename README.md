@@ -17,7 +17,7 @@ A corresponding taxonomy identification file (superkingdom, phylum, class, order
 The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Anacapa)runs **Bowtie2** (Langmead et al., 2009) to assigns reads to these references databases and generate a corresponding taxonomy file. Thus the final step is to generate **Bowtie2** formatted data index libraries.
 
 ## Overview
-![Screenshot](Crux_flow.png){:height="50%" width="50%"}
+![](Crux_flow.png?s=50)
 
 ## Before CRUX is operable, you will need to download, install and/or build several programs and databases.
 **__First Download the crux_release_V1_db folder.__** The executables and database folders should be accessible from this folder. However, if you already have any these programs or databases, there is no need to add them to the crux_release_V1_db folder. Instead update the file paths or loading commands to the Crux_config.sh and crux_vars.sh folders accordingly.
