@@ -67,9 +67,9 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 1. NCBI taxonomy dump:  
         ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 	* If you are not modifying the Crux_config.sh, then the path to the taxonomy folder should be as follows:
-  ```ruby
-  ~/crux_release_V1_db/TAXO
-  ```
+```ruby
+~/crux_release_V1_db/TAXO
+```
 	* The folder should contain the following files: delnodes.dmp, merged.dmp, names.dmp, nodes.dmp
 	* download information can be found here:
           https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
