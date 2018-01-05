@@ -1,3 +1,5 @@
+# This CRUX branch will no longer be updated as of 1-5-2018
+
 # CRUX: Creating Reference libraries Using eXisting tools
 
 ### CRUX_release_V1		10-17-2017
