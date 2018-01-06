@@ -37,6 +37,7 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 2. ecoPCR:
          https://git.metabarcoding.org/obitools/ecopcr/wikis/home
 	* If you are not modifying the Crux_config.sh, then the path to the ecoPCR executable should be as follows:
+
 ```
 ~/crux_release_V1_db/ecoPCR/src/ecoPCR
 ```
@@ -49,6 +50,7 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
          https://www.ncbi.nlm.nih.gov/books/NBK279690/
 	* the lastest BLAST executables can be downloaded from: ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.6.0/
 	* If you are not modifying the Crux_config.sh, then the path to the blastn executable should be as follows:
+  
 ```
  ~/crux_release_V1_db/ncbi-blast-2.6.0+/bin/blastn
 ```
@@ -68,9 +70,9 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
         ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 	* If you are not modifying the Crux_config.sh, then the path to the taxonomy folder should be as follows:
 
-  ```
+```
   ~/crux_release_V1_db/TAXO
-  ```
+```
 
 	 * The folder should contain the following files: delnodes.dmp, merged.dmp, names.dmp, nodes.dmp
 	 * download information can be found here: https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
@@ -78,9 +80,9 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 2. NCBI accession2taxonomy file: ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
 	* If you are not modifying the Crux_config.sh, then the path to the accession to taxonomy file should be as follows:
 
-  ```ruby
+```ruby
     ~/crux_release_V1_db/accession2taxonomy/nucl_gb.accession2taxid
-  ```
+```
 
 	 * download information can be found here: https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
 
@@ -110,7 +112,7 @@ gunzip tar -zxvf \*.tar.gz
 
     etc...
 
-  ```ruby
+  ```
   gunzip *.gz
   ```
 
@@ -129,11 +131,11 @@ gunzip tar -zxvf \*.tar.gz
 	* the output folder path (--ecopcrdb-output)
 		* the file path needs to be
 
-```ruby
+```
 ~/crux_release_V1_db/Obitools_databases/some_folder_name_that_corresponds_to_the_type_of embl_sequences
 ```
-e.g.
-```ruby
+    e.g.
+```
 ~/crux_release_V1_db/Obitools_databases/EMBL_6167017_std_pro
 ```
 		* the input file(s) path(s)
