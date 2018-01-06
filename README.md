@@ -37,7 +37,7 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 2. ecoPCR:
          https://git.metabarcoding.org/obitools/ecopcr/wikis/home
 	* If you are not modifying the Crux_config.sh, then the path to the ecoPCR executable should be as follows:
-```ruby
+```
 ~/crux_release_V1_db/ecoPCR/src/ecoPCR
 ```
 
@@ -49,7 +49,7 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
          https://www.ncbi.nlm.nih.gov/books/NBK279690/
 	* the lastest BLAST executables can be downloaded from: ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.6.0/
 	* If you are not modifying the Crux_config.sh, then the path to the blastn executable should be as follows:
-```ruby
+```
  ~/crux_release_V1_db/ncbi-blast-2.6.0+/bin/blastn
 ```
 
@@ -68,7 +68,7 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
         ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 	* If you are not modifying the Crux_config.sh, then the path to the taxonomy folder should be as follows:
 
-  ```ruby
+  ```
   ~/crux_release_V1_db/TAXO
   ```
 
@@ -86,7 +86,7 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 
 3. NCBI BLAST nt library: ftp://ftp.ncbi.nlm.nih.gov/blast/db/
 
-```ruby
+```
 mkdir /NCBI_blast_nt in ~/crux_release_V1_db
 cd ~/crux_release_V1_db/NCBI_blast_nt
 wget ftp://ftp.ncbi.nlm.nih.gov/blast/db/nt*
@@ -103,8 +103,8 @@ gunzip tar -zxvf \*.tar.gz
 	* These do not need to be stored in crux_release_V1_db, but they need to be stored as a single folder or as a series of folders based on taxonomic groupings (e.g. store all prokaryotes (pro) in a single and separate folder, store all plant (pln) in a single and separate folder, etc.)
 	* These are very large files, and it is less memory intensive to download them in small batches, and convert them into many small obitools/ecopcr readable databases.
 
-  ```ruby
-  wget              ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_fun
+  ```
+  wget ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_fun
   wget ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_pro
   ```
 
