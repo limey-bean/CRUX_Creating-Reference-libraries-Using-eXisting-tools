@@ -80,11 +80,11 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 2. NCBI accession2taxonomy file: ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
 	* If you are not modifying the Crux_config.sh, then the path to the accession to taxonomy file should be as follows:
 
-  ```ruby
-  ~/crux_release_V1_db/accession2taxonomy/nucl_gb.accession2taxid
-  ```
+    ```ruby
+    ~/crux_release_V1_db/accession2taxonomy/nucl_gb.accession2taxid
+    ```
 
-	 * download information can be found here: https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
+	* download information can be found here: https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
 
 3. NCBI BLAST nt library: ftp://ftp.ncbi.nlm.nih.gov/blast/db/
 
