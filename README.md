@@ -67,23 +67,25 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 1. NCBI taxonomy dump:  
         ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
 	* If you are not modifying the Crux_config.sh, then the path to the taxonomy folder should be as follows:
-```ruby
-~/crux_release_V1_db/TAXO
-```
-	 * The folder should contain the following files:
-    delnodes.dmp, merged.dmp, names.dmp, nodes.dmp
-	 * download information can be found here:
-    https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
+
+  ```ruby
+  ~/crux_release_V1_db/TAXO
+  ```
+
+	 * The folder should contain the following files: delnodes.dmp, merged.dmp, names.dmp, nodes.dmp
+	 * download information can be found here: https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
 
 2. NCBI accession2taxonomy file: ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
 	* If you are not modifying the Crux_config.sh, then the path to the accession to taxonomy file should be as follows:
-```ruby
-~/crux_release_V1_db/accession2taxonomy/nucl_gb.accession2taxid
-```
-	 * download information can be found here:
-    https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
+
+  ```ruby
+    ~/crux_release_V1_db/accession2taxonomy/nucl_gb.accession2taxid
+  ```
+
+	 * download information can be found here: https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
 
 3. NCBI BLAST nt library: ftp://ftp.ncbi.nlm.nih.gov/blast/db/
+
 ```ruby
 mkdir /NCBI_blast_nt in ~/crux_release_V1_db
 cd ~/crux_release_V1_db/NCBI_blast_nt
@@ -100,14 +102,17 @@ gunzip tar -zxvf \*.tar.gz
 		* It is ok to skipped hum, and mus because those reads will be picked up while blasting.
 	* These do not need to be stored in crux_release_V1_db, but they need to be stored as a single folder or as a series of folders based on taxonomic groupings (e.g. store all prokaryotes (pro) in a single and separate folder, store all plant (pln) in a single and separate folder, etc.)
 	* These are very large files, and it is less memory intensive to download them in small batches, and convert them into many small obitools/ecopcr readable databases.
-```ruby
-wget              ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_fun
-wget ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_pro
-```
-  etc...
-```ruby
-gunzip *.gz
-```
+
+  ```ruby
+  wget              ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_fun
+  wget ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_pro
+  ```
+
+    etc...
+
+  ```ruby
+  gunzip *.gz
+  ```
 
 
 **__Building OBItools/ecoPCR Readable Databases__**  
