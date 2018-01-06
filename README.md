@@ -135,20 +135,23 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
     ~/crux_release_V1_db/Obitools_databases/some_folder_name_that_corresponds_to_the_type_of_embl_sequences
     ```
     e.g.
+
     ```
     ~/crux_release_V1_db/Obitools_databases/EMBL_6167017_std_pro
     ```
-		* the input file(s) path(s)
-			* e.g. the folder where all prokaryote (pro) files are stored in a single and separate folder
-* Depending on the size of the EMBL database files this may take a lot of time and a lot of RAM
-* The command is as follows:
-```ruby
-obiconvert -t </path/to/taxonfile> --embl --ecopcrdb-output=/path/to/output /path/to/inputs --skip-on-error
-```
-	e.g.
-```ruby
-obiconvert -t ~/crux_release_V1_db/TAXO --embl --ecopcrdb-output=~/crux_release_V1_db/Obitools_databases/EMBL_6167017_std_pro ~/EMBL_pro/\*.dat --skip-on-error
-```
+    * the input file(s) path(s)
+    * e.g. the folder where all prokaryote (pro) files are stored in a single and separate folder
+    * Depending on the size of the EMBL database files this may take a lot of time and a lot of RAM
+    * The command is as follows:
+
+    ```ruby
+    obiconvert -t </path/to/taxonfile> --embl --ecopcrdb-output=/path/to/output /path/to/inputs --skip-on-error
+    ```
+	   e.g.
+
+     ```ruby
+     obiconvert -t ~/crux_release_V1_db/TAXO --embl --ecopcrdb-output=~/crux_release_V1_db/Obitools_databases/EMBL_6167017_std_pro ~/EMBL_pro/\*.dat --skip-on-error
+     ```
 
 ## Running CRUX
 * The command to run CRUX is:
