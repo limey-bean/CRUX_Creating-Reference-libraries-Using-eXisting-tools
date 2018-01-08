@@ -54,16 +54,16 @@ do
 	 # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
      cp ${nam} ${nam1}_${i}
      rm ${nam}
-	 ((i=i+1))  
+	 ((i=i+1))
   done
  ### count number of files in the directory
  file_count=$( shopt -s nullglob ; set -- ${dir}blast2_ready_* ; echo $#)
  # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
  array_var="\$SGE_TASK_ID"
  echo ${array_var}
- 
- printf "#!/bin/bash\n#$ -l highp,h_rt=20:00:00,h_data=48G\n#$ -N blast2_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/${NAME}_blast2.out\n#$ -e ${ODIR}/blast_logs/${NAME}_blast2.err \n#$ -t 1-${file_count} \n\n\n sh ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${nam1}_${array_var} -o ${ODIR} -l blast2_ready_${array_var} -j ${j} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast2.sh
+
+ printf "#!/bin/bash\n#$ -l highp,h_rt=5:00:00,h_data=30G\n#$ -N blast2_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/${NAME}_blast2.out\n#$ -e ${ODIR}/blast_logs/${NAME}_blast2.err \n#$ -t 1-${file_count} \n\n\n sh ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${nam1}_${array_var} -o ${ODIR} -l blast2_ready_${array_var} -j ${j} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast2.sh
  qsub ${ODIR}/blast_jobs/${j}_blast2.sh
  #rm -r ${dir}blast_ready_*_blast1"
-done 
+done
 ###

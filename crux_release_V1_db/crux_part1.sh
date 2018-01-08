@@ -141,7 +141,7 @@ do
 	do
      l=${st#${ODIR}/${NAME}_ecoPCR/cleaned/${j}/}
      # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
-     printf "#!/bin/bash\n#$ -l highp,h_rt=04:00:00,h_data=22G\n#$ -N blast_${l}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/${j}_paired.out\n#$ -e ${ODIR}/blast_logs/${j}_paired.err \n\n\n sh ${DB}/scripts/sub_blast.sh -n ${NAME} -q ${st} -o ${ODIR} -j ${j} -l ${l} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast1.sh
+     printf "#!/bin/bash\n#$ -l highp,h_rt=05:00:00,h_data=30G\n#$ -N blast1_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/${j}_paired.out\n#$ -e ${ODIR}/blast_logs/${j}_paired.err \n\n\n sh ${DB}/scripts/sub_blast.sh -n ${NAME} -q ${st} -o ${ODIR} -j ${j} -l ${l} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast1.sh
 	 qsub ${ODIR}/blast_jobs/${j}_blast1.sh
     done
  else
