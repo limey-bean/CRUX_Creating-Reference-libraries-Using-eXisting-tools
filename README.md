@@ -175,8 +175,6 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 
 The command for CRUX Part 1 is as follows:
 
-The command to run CRUX part 1 is:
-
   ```
   sh crux_part1.sh -n metabarcode_target_name -f forward_primer_sequence -r reverse_primer_sequence -l shortest expected length of an amplicon -m longest expected length of an amplicon -d path_to_CRUX_db_folder -o path_to_output_folder -c clean up intermediate files "y/n" -h "cluster username"
   ```
@@ -203,11 +201,12 @@ The command to run CRUX part 1 is:
   ```
   ~/crux_release_V1_db/CO1/blast_jobs/*_blast2.sh
   ```
-The command to run CRUX part 2 is:
 
-    ```
-    sh crux_part2.sh -n metabarcode_target_name -f forward_primer_sequence -r reverse_primer_sequence -l shortest expected length of an amplicon -m longest expected length of an amplicon -d path_to_CRUX_db_folder -o path_to_output_folder -c clean up intermediate files "y/n" -h "cluster username"
-    ```
+The command to run CRUX Part 2 is:
+
+```
+sh crux_part2.sh -n metabarcode_target_name -f forward_primer_sequence -r reverse_primer_sequence -l shortest expected length of an amplicon -m longest expected length of an amplicon -d path_to_CRUX_db_folder -o path_to_output_folder -c clean up intermediate files "y/n" -h "cluster username"
+```
 
 ### Crux Part 3: Cleaning up blast results, generating bowtie2 libraries, and removing intermediate steps
 1. The blast results are sorted by length (longest to shortest) and then de-replicated by NCBI accession version number and converted into fasta format. Only the longest instance of a read is retained.
@@ -217,12 +216,18 @@ The command to run CRUX part 2 is:
 4. Build bowtie2 index libraries for the filtered and unfiltered Databases
 5. Remove intermediate steps
 
-The command to run CRUX part 3 is:
+The command to run CRUX Part 3 is:
 
   ```
   sh crux_part3.sh -n metabarcode_target_name -f forward_primer_sequence -r reverse_primer_sequence -l shortest expected length of an amplicon -m longest expected length of an amplicon -d path_to_CRUX_db_folder -o path_to_output_folder -c clean up intermediate files "y/n" -h "cluster username"
   ```
 
+The database files are found in:
+
+```
+~/crux_release_V1_db/<metabarcode_target_name>/<metabarcode_target_name>_db_filtered_to_remove_ambigous_taxonomy
+~/crux_release_V1_db/<metabarcode_target_name>/<metabarcode_target_name>_db_unfiltered
+```
 
 ## References:
 

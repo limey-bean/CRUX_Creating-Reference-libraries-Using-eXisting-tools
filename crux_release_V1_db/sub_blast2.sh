@@ -27,7 +27,7 @@ source ${DB}/scripts/crux_config.sh
 
 #submit blast job for a given fasta file
 
-${BLASTn_CMD} -query ${QU} -out ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/raw/${FILE}_blast_out.txt -db ${BLAST_DB} -evalue 0.0000001 -outfmt "6 saccver staxid sseq" -num_threads 40 -perc_identity 70 -qcov_hsp_perc 80 -num_alignments 2000 -gapopen 1 -gapextend 1
+${BLASTn_CMD} -query ${QU} -out ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/raw/${FILE}_blast_out.txt -db ${BLAST_DB} -evalue ${BLAST_eVALUE} -outfmt "6 saccver staxid sseq" -num_threads ${BLAST_NUM_THREADS} -perc_identity ${BLAST_PERC_IDENTITY} -qcov_hsp_perc ${BLAST_HSP_PERC} -num_alignments ${BLAST_NUM_ALIGNMENTS} -gapopen 1 -gapextend 1
 
 # remove duplicate version accession numbers and convert to fasta file
 

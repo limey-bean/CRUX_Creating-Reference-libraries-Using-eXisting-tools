@@ -31,7 +31,7 @@ source ${DB}/scripts/crux_config.sh
 #submit blast job for a given fasta file
 mkdir -p ${QU}_blast1
 
-${BLASTn_CMD} -query ${QU} -out ${QU}_blast1/blast1_out.txt -db ${BLAST_DB} -evalue 0.00001 -outfmt "6 saccver staxid sseq" -num_threads ${BLAST_NUM_THREADS} -perc_identity 50 -qcov_hsp_perc 100 -num_alignments 5000 -gapopen 1 -gapextend 1
+${BLASTn_CMD} -query ${QU} -out ${QU}_blast1/blast1_out.txt -db ${BLAST_DB} -evalue ${BLAST_eVALUE1} -outfmt "6 saccver staxid sseq" -num_threads ${BLAST_NUM_THREADS1} -perc_identity ${BLAST_PERC_IDENTITY1} -qcov_hsp_perc ${BLAST_HSP_PERC1} -num_alignments ${BLAST_NUM_ALIGNMENTS1} -gapopen 1 -gapextend 1
 
 # remove duplicate version accession numbers and convert to fasta file
 
@@ -44,5 +44,3 @@ awk '/^>/{f=!d[$1];d[$1]=1}f' ${QU}_blast1/blast1_out.fasta.temp > ${QU}_blast1/
 rm ${QU}_blast1/blast1_out.txt
 
 rm ${QU}_blast1/blast1_out.fasta.temp
-
-
