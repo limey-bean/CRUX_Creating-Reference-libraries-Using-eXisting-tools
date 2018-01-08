@@ -65,6 +65,7 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 
 
 **__Databases to download__**
+***__Any time you download a new blastn database, Download the newest TAXO dump and NCBI accession2taxonomy file!!!__***
 
 1. NCBI taxonomy dump:  
         ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
