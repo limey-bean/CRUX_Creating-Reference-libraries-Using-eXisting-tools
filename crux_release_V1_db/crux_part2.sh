@@ -35,7 +35,7 @@ while getopts "n:f:r:l:m:o:d:c:h:" opt; do
     esac
 done
 
-for dir in ${ODIR}/${NAME}_ecoPCR/cleaned/${NAME}_EMBL_*/
+for dir in ${ODIR}/${NAME}_ecoPCR/cleaned/${NAME}_OB_dat_EMBL_*/
 do
  dir1=${dir%/}
  j=${dir1#${ODIR}/${NAME}_ecoPCR/cleaned/}

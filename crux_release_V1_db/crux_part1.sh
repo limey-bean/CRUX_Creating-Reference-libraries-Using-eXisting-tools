@@ -76,7 +76,7 @@ echo "If this is not what you want, then modify ${DB}/scripts/crux_vars.sh"
 ###
 mkdir -p ${ODIR}/${NAME}_ecoPCR
 mkdir -p ${ODIR}/${NAME}_ecoPCR/raw_out/
-for db in ${OBI_DB}/EMBL*/
+for db in ${OBI_DB}/OB_dat_*/
 do
  db1=${db%/}
  j=${db1#${OBI_DB}/}

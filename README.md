@@ -132,12 +132,12 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 		* the file path needs to be
 
     ```
-    ~/crux_release_V1_db/Obitools_databases/some_folder_name_that_corresponds_to_the_type_of_embl_sequences
+    ~/crux_release_V1_db/Obitools_databases/OB_dat_some_folder_name_that_corresponds_to_the_type_of_embl_sequences
     ```
     e.g.
 
     ```
-    ~/crux_release_V1_db/Obitools_databases/EMBL_6167017_std_pro
+    ~/crux_release_V1_db/Obitools_databases/OB_dat_OB_dat_EMBL_6167017_std_pro
     ```
     * the input file(s) path(s)
     * e.g. the folder where all prokaryote (pro) files are stored in a single and separate folder
@@ -150,7 +150,7 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 	  e.g.
 
      ```ruby
-     obiconvert -t ~/crux_release_V1_db/TAXO --embl --ecopcrdb-output=~/crux_release_V1_db/Obitools_databases/EMBL_6167017_std_pro ~/EMBL_pro/\*.dat --skip-on-error
+     obiconvert -t ~/crux_release_V1_db/TAXO --embl --ecopcrdb-output=~/crux_release_V1_db/Obitools_databases/OB_dat_EMBL_6167017_std_pro ~/EMBL_pro/\*.dat --skip-on-error
      ```
 
 ## Running CRUX
