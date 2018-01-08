@@ -68,24 +68,26 @@ mkdir -p ${ODIR}/${NAME}_db_filtered_to_remove_ambigous_taxonomy/${NAME}_fasta_a
 mkdir -p ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy
 
 # merge all clean BLAST 1 hits, add to blast out file
-cat ${ODIR}/${NAME}_ecoPCR/cleaned/${NAME}_OB_dat_*_std_*/blast1_all.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
+cat ${ODIR}/${NAME}_ecoPCR/cleaned/${NAME}_OB_dat_*_std_*/blast1_all.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_all1_blast.fasta
 
 # for each BLAST 2 fasta folder
 for str in ${ODIR}/${NAME}_BLAST/${NAME}_*_out
 do
+  str1=${str%${NAME}_*_out}
+  j=${str1#${ODIR}/${NAME}_BLAST/}
   echo "${str}"
   echo "${str}/fasta/*.fasta"
   # add the blast 2 hits to the other length sorted dereplicated clean blast2 hits
-  cat ${str}/fasta/*.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
+  cat ${str}/fasta/*.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta
   # length sort and dereplicate Reads
-  awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta  | awk -F '\t' '{printf("%d\t%s\n",length($2),$0);}' | sort -k1,1rn | cut -f 2- | tr "\t" "\n" > ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta.temp
-  awk '/^>/{f=!d[$1];d[$1]=1}f' ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta.temp > ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
-  rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta.temp
+  awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta  | awk -F '\t' '{printf("%d\t%s\n",length($2),$0);}' | sort -k1,1rn | cut -f 2- | tr "\t" "\n" > ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta.temp
+  awk '/^>/{f=!d[$1];d[$1]=1}f' ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta.temp > ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta
+  rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta.temp
 done
 
 #change the name and delete the redundant stuff
-cp ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta
-rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
+cat ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_*_blast.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta
+# rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_*_blast.fasta
 
 
 ### add taxonomy using entrez_qiime.py
