@@ -1,6 +1,6 @@
 # CRUX: Creating Reference libraries Using eXisting tools
 
-### CRUX		last updated 1-05-2018
+### CRUX		last updated 1-08-2018
 #### Written by Emily Curd (eecurd@g.ucla.edu), Gaurav Kandlikar (gkandlikar@ucla.edu), and Jesse Gomer (jessegomer@gmail.com)
 #### Developed at UCLA for the University of California Conservation Consortium's CALeDNA Program
 

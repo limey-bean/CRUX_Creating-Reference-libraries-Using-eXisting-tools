@@ -54,17 +54,12 @@ ${BOWTIE2}
 
 echo " "
 echo "in the case of failure check, that your the config file is accurate: $DB/crux_config.sh"
-##########################-d
-# Part 1: ecoPCR
-##########################
 mkdir -p ${ODIR}/blast_jobs
 mkdir -p ${ODIR}/blast_logs
 
 
-echo " "
-echo "in the case of failure check, that your the config file is accurate: $DB/crux_config.sh"
 ##########################
-# Part 1: ecoPCR
+# Part 1.1: ecoPCR
 ##########################
 
 echo " "
@@ -76,6 +71,7 @@ echo "If this is not what you want, then modify ${DB}/scripts/crux_vars.sh"
 ###
 mkdir -p ${ODIR}/${NAME}_ecoPCR
 mkdir -p ${ODIR}/${NAME}_ecoPCR/raw_out/
+#run ecoPCR on each folder in the obitools database folder
 for db in ${OBI_DB}/OB_dat_*/
 do
  db1=${db%/}
@@ -86,7 +82,11 @@ do
 date
 done
 ###
-${MODULE_SOURCE}
+
+##########################
+# Part 1.2: ecoPCR
+##########################
+
 echo " "
 echo " "
 echo "Part 1.2:"
@@ -97,18 +97,29 @@ mkdir -p ${ODIR}/${NAME}_ecoPCR/cleaned
 # make primer files for cutadapt step
 printf ">${NAME}_F\n${FP}\n>${NAME}_R\n${RP}" > "${DB}/cutadapt_files/${NAME}.fasta"
 python ${DB}/scripts/crux_format_primers_cutadapt.py ${DB}/cutadapt_files/${NAME}.fasta ${DB}/cutadapt_files/g_${NAME}.fasta ${DB}/cutadapt_files/a_${NAME}.fasta
-#run cutadapt through out fiels
+#run ecoPCR through cutadapt to verify that the primer seqeunce exists, and to trim it off
 for str in ${ODIR}/${NAME}_ecoPCR/raw_out/*_ecoPCR_out
 do
  str1=${str%_ecoPCR_out}
  j=${str1#${ODIR}/${NAME}_ecoPCR/raw_out/}
+ #reformat ecoPCR out and remove duplicate reads by taxid
  tail -n +14 ${str} |cut -d "|" -f 3,21|sed "s/ | /,/g"|awk -F"," '!_[$1]++' | sed "s/\s//g" |awk 'BEGIN { FS=","; } {print ">"$1"\n"$2}' > ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_ecoPCR_blast_input.fasta
+ #run cut adapt
  ${CUTADAPT} -e .2 -a file:${DB}/cutadapt_files/a_${NAME}.fasta  --untrimmed-output ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_untrimmed_1.fasta -o ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_clean.fasta ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_ecoPCR_blast_input.fasta >> ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_cutadapt-report.txt
  ${CUTADAPT} -e .2 -g file:${DB}/cutadapt_files/g_${NAME}.fasta  --untrimmed-output ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_untrimmed_2.fasta -o ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_and_g_clean.fasta ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_clean.fasta >> ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_cutadapt-report.txt
  echo "..."${j}" is clean"
 date
 done
+###
 
+##########################
+# Part 1.2: Submit BLAST 1 job
+##########################
+
+echo " "
+echo " "
+echo "Part 1.3:"
+echo "Clean ${NAME} ecoPCR output for blasting and submit blast1 array job"
 
 ### if file 0b discard?code from https://www.cyberciti.biz/faq/linux-unix-script-check-if-file-empty-or-not/
 ## loop through ecoPCR results
@@ -129,27 +140,26 @@ do
   echo "${str} has ecoPCR reads that passed the minimum criteria to move to the next step."
   # split ecopcr output into files with 500 reads each
   split -l 1000 ${str} ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_
-    # do something as file has data
+    # replace aa, ab,... etc. from split outputand replcae with concecutive numbers 1, 2, ... etc.
     i = 1
-    for nam in {ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_*
+  for nam in {ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_*
 	do
-     # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
      cp ${nam} ${nam}_${i}
 	 i = i+1
     done
   	for st in ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_*
-	do
+	  do
      l=${st#${ODIR}/${NAME}_ecoPCR/cleaned/${j}/}
      # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
      printf "#!/bin/bash\n#$ -l highp,h_rt=05:00:00,h_data=30G\n#$ -N blast1_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/${j}_paired.out\n#$ -e ${ODIR}/blast_logs/${j}_paired.err \n\n\n sh ${DB}/scripts/sub_blast.sh -n ${NAME} -q ${st} -o ${ODIR} -j ${j} -l ${l} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast1.sh
-	 qsub ${ODIR}/blast_jobs/${j}_blast1.sh
+	   qsub ${ODIR}/blast_jobs/${j}_blast1.sh
     done
  else
   echo " "
   echo "${str} did not pass the minimum criteria that passes ecoPCR reads to the next step."
   rm ${str}
   echo " Don't panic ${str} was deleted because it was empty, and we do not need it in the next step"
-  # do something as file is empty
  fi
 done
 ###
+echo "  Once all array jobs have run, submit crux_par2.sh"

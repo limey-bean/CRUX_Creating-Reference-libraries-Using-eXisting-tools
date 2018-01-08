@@ -54,42 +54,44 @@ ${BOWTIE2}
 
 
 ##########################
-# Part 3: Cleaning up blast results
+# Part 3.1: Cleaning up blast results
 ##########################
 
 ################################ once all array jobs are finished run this script
-
-
-
-
 echo " "
 echo " "
 echo "Part 3.1: Cleaning up blast results"
-echo "For each set of BLAST results"
+echo "For each set of BLAST 1 and 2 results"
 echo "     Merge and De-replicate by NCBI accession version numbers, and convert to fasta format."
 echo "     Then use entrez-qiime to generate a corresponding taxonomy file, and clean the blast output and taxonomy file to eliminate poorly annotated sequences."
 mkdir -p ${ODIR}/${NAME}_db_filtered_to_remove_ambigous_taxonomy/${NAME}_fasta_and_taxonomy/
 mkdir -p ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy
 
+# merge all clean BLAST 1 hits, add to blast out file
 cat ${ODIR}/${NAME}_ecoPCR/cleaned/${NAME}_OB_dat_*_std_*/blast1_all.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
 
+# for each BLAST 2 fasta folder
 for str in ${ODIR}/${NAME}_BLAST/${NAME}_*_out
 do
   echo "${str}"
   echo "${str}/fasta/*.fasta"
+  # add the blast 2 hits to the other length sorted dereplicated clean blast2 hits
   cat ${str}/fasta/*.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
+  # length sort and dereplicate Reads
   awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta  | awk -F '\t' '{printf("%d\t%s\n",length($2),$0);}' | sort -k1,1rn | cut -f 2- | tr "\t" "\n" > ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta.temp
   awk '/^>/{f=!d[$1];d[$1]=1}f' ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta.temp > ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
   rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta.temp
 done
 
+#change the name and delete the redundant stuff
 cp ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta
 rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
 
 
-### merge and clean blast data
+### add taxonomy using entrez_qiime.py
 echo "...Running ${j} entrez-qiime and cleaning up fasta and taxonomy files"
 python ${ENTREZ_QIIME} -i ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta -o ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy -n ${TAXO} -a ${A2T} -r superkingdom,phylum,class,order,family,genus,species
+# clean up reads based on low resolution taxonomy and store filtered reads in filtered file
 python ${DB}/scripts/clean_blast.py ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta ${ODIR}/${NAME}_db_filtered_to_remove_ambigous_taxonomy/${NAME}_fasta_and_taxonomy/${NAME}_.fasta ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt ${ODIR}/${NAME}_db_filtered_to_remove_ambigous_taxonomy/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt
 python ${DB}/scripts/tax_fix.py ${ODIR}/${NAME}_db_filtered_to_remove_ambigous_taxonomy/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt ${ODIR}/${NAME}_db_filtered_to_remove_ambigous_taxonomy/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt.tmp
 grep '[^[:blank:]]'  ${ODIR}/${NAME}_db_filtered_to_remove_ambigous_taxonomy/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt.tmp > ${ODIR}/${NAME}_db_filtered_to_remove_ambigous_taxonomy/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt
@@ -98,13 +100,14 @@ echo "... ${j} final fasta and taxonomy database complete"
 
 
 ##########################
-# Part 4: Turn the reference libraries into Bowtie2 searchable libraries
+# Part 3.2: Turn the reference libraries into Bowtie2 searchable libraries
 ##########################
 
 echo " "
 echo " "
-echo "Part 5:"
+echo "Part 3.2:"
 echo "The bowtie2 database files for ${NAME} can be found in the ${NAME}_bowtie2_databases within the ${NAME}_db_unfiltered and ${NAME}_db_filtered_to_remove_ambigous_taxonomy folder's in ${ODIR}:"
+#make bowtie2 databases for filtered and unfiltered database
 mkdir -p ${ODIR}/${NAME}_db_unfiltered/${NAME}_bowtie2_database
 bowtie2-build -f ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta ${ODIR}/${NAME}_db_unfiltered/${NAME}_bowtie2_database/${NAME}_bowtie2_index
 date
@@ -119,12 +122,12 @@ echo " "
 
 
 ##########################
-# Part 5: Delete the intermediate steps
+# Part 3.3: Delete the intermediate steps
 ##########################
 
 echo " "
 echo " "
-echo "Part 5:"
+echo "Part 3.3:"
 echo "Deleting the intermediate files: ${CLEAN}"
 if [ ${CLEAN} = "n" ]
  then
