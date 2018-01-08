@@ -71,7 +71,7 @@ echo "     Then use entrez-qiime to generate a corresponding taxonomy file, and 
 mkdir -p ${ODIR}/${NAME}_db_filtered_to_remove_ambigous_taxonomy/${NAME}_fasta_and_taxonomy/
 mkdir -p ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy
 
-cat ${ODIR}/${NAME}/${NAME}_ecoPCR/cleaned/${NAME}_EMBL_*_std_*/blast1_all.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
+cat ${ODIR}/${NAME}_ecoPCR/cleaned/${NAME}_EMBL_*_std_*/blast1_all.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
 
 for str in ${ODIR}/${NAME}_BLAST/${NAME}_*_out
 do
