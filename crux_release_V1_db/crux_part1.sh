@@ -22,7 +22,7 @@ while getopts "n:f:r:l:m:o:d:c:h:" opt; do
         ;;
         l) SHRT="$OPTARG"
         ;;
-	    m) LNG="$OPTARG"
+	      m) LNG="$OPTARG"
         ;;
         o) ODIR="$OPTARG"
         ;;
@@ -37,11 +37,11 @@ done
 
 
 ###########################################
-                                                                                                                                                
+
 # Emily Curd (eecurd@g.ucla.edu), Gaurav Kandlikar (gkandlikar@ucla.edu), and Jesse Gomer (jessegomer@gmail.com)
 # Updated 07 September 2017
 
-# this is a draft of a pipeline that takes any pair of primer sequences and generages a comprehensive reference database that could be amplified with those primers, using as much data from published sequences as posible. 
+# this is a draft of a pipeline that takes any pair of primer sequences and generages a comprehensive reference database that could be amplified with those primers, using as much data from published sequences as posible.
 
 # THE GOAL: is to capture not only the sequences that were submitted with primers included in the read (ecoPCR gets these), but also those that do not include primer regions but are some % of the length of the expected amplion (BLAST fills in these holes), and generate reference libraries and taxonomy files compatible with qiime or kraken taxonomy pipelines.
 
@@ -53,7 +53,7 @@ ${QIIME}
 ${BOWTIE2}
 
 echo " "
-echo "in the case of failure check, that your the config file is accurate: $DB/crux_config.sh" 
+echo "in the case of failure check, that your the config file is accurate: $DB/crux_config.sh"
 ##########################-d
 # Part 1: ecoPCR
 ##########################
@@ -62,7 +62,7 @@ mkdir -p ${ODIR}/blast_logs
 
 
 echo " "
-echo "in the case of failure check, that your the config file is accurate: $DB/crux_config.sh" 
+echo "in the case of failure check, that your the config file is accurate: $DB/crux_config.sh"
 ##########################
 # Part 1: ecoPCR
 ##########################
@@ -70,8 +70,8 @@ echo "in the case of failure check, that your the config file is accurate: $DB/c
 echo " "
 echo " "
 echo "Part 1.1:"
-echo "Run ecoPCR with ${NAME} primers F- ${FP} R- ${RP} and these parameters:" 
-echo "     missmatch = ${ECOPCR_e}" 
+echo "Run ecoPCR with ${NAME} primers F- ${FP} R- ${RP} and these parameters:"
+echo "     missmatch = ${ECOPCR_e}"
 echo "If this is not what you want, then modify ${DB}/scripts/crux_vars.sh"
 ###
 mkdir -p ${ODIR}/${NAME}_ecoPCR
@@ -123,7 +123,7 @@ do
  mkdir -p ${ODIR}/${NAME}_BLAST/${j}_BLAST_out/fasta
  [ $# -eq 0 ] && { echo "Usage: $0 filename"; exit 1; }
  [ ! -f "${str}" ] && { echo "Error: $0 file not found."; exit 2; }
- if [ -s "${str}" ] 
+ if [ -s "${str}" ]
   then
   echo " "
   echo "${str} has ecoPCR reads that passed the minimum criteria to move to the next step."
@@ -135,21 +135,21 @@ do
 	do
      # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
      cp ${nam} ${nam}_${i}
-	 i = i+1  
+	 i = i+1
     done
   	for st in ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_*
 	do
      l=${st#${ODIR}/${NAME}_ecoPCR/cleaned/${j}/}
      # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
-     printf "#!/bin/bash\n#$ -l highp,h_rt=04:00:00,h_data=22G\n#$ -N blast_${l}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/${j}_paired.out\n#$ -e ${ODIR}/blast_logs/${j}_paired.err \n\n\n sh ${DB}/scripts/sub_blast.sh -n ${NAME} -q ${st} -o ${ODIR} -j ${j} -l ${l} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_${l}.sh
-	 qsub ${ODIR}/blast_jobs/${j}_${l}.sh   
+     printf "#!/bin/bash\n#$ -l highp,h_rt=04:00:00,h_data=22G\n#$ -N blast_${l}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/${j}_paired.out\n#$ -e ${ODIR}/blast_logs/${j}_paired.err \n\n\n sh ${DB}/scripts/sub_blast.sh -n ${NAME} -q ${st} -o ${ODIR} -j ${j} -l ${l} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast1.sh
+	 qsub ${ODIR}/blast_jobs/${j}_blast1.sh
     done
  else
   echo " "
   echo "${str} did not pass the minimum criteria that passes ecoPCR reads to the next step."
   rm ${str}
   echo " Don't panic ${str} was deleted because it was empty, and we do not need it in the next step"
-  # do something as file is empty 
+  # do something as file is empty
  fi
-done 
+done
 ###
