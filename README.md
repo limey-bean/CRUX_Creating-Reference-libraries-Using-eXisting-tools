@@ -97,6 +97,17 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
   ```
 
 4. Database files for generating ecoPCR compatible OBItools libraries
+  * __all libraries need to be in__
+  ```
+  ~/crux_release_V1_db/Obitools_databases
+  ```
+  __folder and have__
+
+  ```
+  OB_dat_
+  ```
+  __as a folder and file prefix__
+  * If the names are not correct the run will fail.
   * see Obitools documentation for range of file types that can be converted into ecoPCR searchable libraries
   * Example using EMBL_date_std database files:
           ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std
