@@ -137,7 +137,7 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
     e.g.
 
     ```
-    ~/crux_release_V1_db/Obitools_databases/OB_dat_OB_dat_EMBL_6167017_std_pro
+    ~/crux_release_V1_db/Obitools_databases/OB_dat_EMBL_6167017_std_pro
     ```
     * the input file(s) path(s)
     * e.g. the folder where all prokaryote (pro) files are stored in a single and separate folder
@@ -164,10 +164,10 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 2. ecoPCR results are de-replicated based on taxon id (taxid), and converted to fasta format.
 3. cutadapt is used to verify and retain only the ecoPCR reads with correct primer sequences, then trim the primers from the 5' and 3' ends.
 4. Clean fasta files are used as seeds to generate full length BLAST libraries.
- * these seed files are broken in to 500 read chunks and blasted as an array against blasted against the NCBI nucleotide blast databases using blastn.
- * Only full length hits with 50% identity or better are accepted.
- * up to 5000 hits are retained
- * BLAST array jobs submission scripts can be found in:
+  * these seed files are broken in to 500 read chunks and blasted as an array against blasted against the NCBI nucleotide blast databases using blastn.
+  * Only full length hits with 50% identity or better are accepted.
+  * up to 5000 hits are retained
+  * BLAST array jobs submission scripts can be found in:
 
   ```
   ~/crux_release_V1_db/CO1/blast_jobs/*_blast1.sh
