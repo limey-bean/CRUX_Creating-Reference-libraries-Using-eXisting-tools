@@ -149,9 +149,9 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
     ```
 	  e.g.
 
-     ```ruby
-     obiconvert -t ~/crux_release_V1_db/TAXO --embl --ecopcrdb-output=~/crux_release_V1_db/Obitools_databases/OB_dat_EMBL_6167017_std_pro ~/EMBL_pro/\*.dat --skip-on-error
-     ```
+    ```ruby
+    obiconvert -t ~/crux_release_V1_db/TAXO --embl --ecopcrdb-output=~/crux_release_V1_db/Obitools_databases/OB_dat_EMBL_6167017_std_pro ~/EMBL_pro/\*.dat --skip-on-error
+    ```
 
 ## Running CRUX
 ### CRUX was developed to run on an a computer cluster with an SGE scheduler
@@ -160,7 +160,7 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 
 ### Crux Part 1: ecoPCR and BLAST 1
 1. Run ecoPCR using the user specified primer on the user generated OBItools compatible databases.  
-	* ecoPCR parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
+  * ecoPCR parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
 2. ecoPCR results are de-replicated based on taxon id (taxid), and converted to fasta format.
 3. cutadapt is used to verify and retain only the ecoPCR reads with correct primer sequences, then trim the primers from the 5' and 3' ends.
 4. Clean fasta files are used as seeds to generate full length BLAST libraries.
@@ -188,7 +188,7 @@ The command for CRUX Part 1 is as follows:
 ### Crux Part 2: Blast 2
 1. The BLAST results from BLAST 1 are dereplicated by NCBI version accession number
 2. The fasta files are broken into smaller pieces and once agin blasted against the NCBI nucleotide blast databases using blastn.
-	* blastn parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
+  * blastn parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
 	* default parameters are
 	     * e-value = 0.0000000001
 	     * minimum percent of subject that needs to be covered by the query = 80%
