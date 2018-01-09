@@ -1,7 +1,7 @@
 # Written by Jesse Gomer (jessegomer@gmail.com)
 # for the University of California Conservation Consortium's CALeDNA Program
 
-#example   python combine_and_dereplicate_fasta.py -o my_file.fasta a.fasta b.fasta c.fasta
+#example   python combine_and_dereplicate_fasta.py -o my_file.fasta -a a.fasta b.fasta c.fasta
 #    or    python combine_and_dereplicate_fasta.py -o myout.fasta -d my_data_directory/
 import argparse
 import shutil
