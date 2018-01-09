@@ -123,6 +123,7 @@ echo "Clean ${NAME} ecoPCR output for blasting and submit blast1 array job"
 
 ### if file 0b discard?code from https://www.cyberciti.biz/faq/linux-unix-script-check-if-file-empty-or-not/
 ## loop through ecoPCR results
+
 for str in ${ODIR}/${NAME}_ecoPCR/cleaned/*_ecoPCR_blast_input_a_and_g_clean.fasta
 do
  str1=${str%_ecoPCR_blast_input_a_and_g_clean.fasta}
@@ -136,32 +137,37 @@ do
  [ ! -f "${str}" ] && { echo "Error: $0 file not found."; exit 2; }
  if [ -s "${str}" ]
   then
-  echo " "
-  echo "${str} has ecoPCR reads that passed the minimum criteria to move to the next step."
-  # split ecopcr output into files with 500 reads each
-  split -l 1000 ${str} ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_
-    # replace aa, ab,... etc. from split outputand replcae with concecutive numbers 1, 2, ... etc.
-    i = 1
-  for nam in {ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_*
-	do
-     cp ${nam} ${nam}_${i}
-	 i = i+1
-    done
-  	for st in ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_*
-	  do
-     l=${st#${ODIR}/${NAME}_ecoPCR/cleaned/${j}/}
-     # submit 2blast jobs for each file.  One that collects partial length hits, and one that collects full length hits
-     printf "#!/bin/bash\n#$ -l highp,h_rt=05:00:00,h_data=30G\n#$ -N blast1_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/blast1_${j}_${NAME}.out\n#$ -e ${ODIR}/blast_logs/ blast1_${j}_${NAME}.err \n\n\n sh ${DB}/scripts/sub_blast1.sh -n ${NAME} -q ${st} -o ${ODIR} -j ${j} -l ${l} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast1.sh
-	   qsub ${ODIR}/blast_jobs/${j}_blast1.sh
-     printf "#!/bin/bash\n#$ -l highp,h_rt=05:00:00,h_data=30G\n#$ -N blast2_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/ blast2_${j}_${NAME}\n#$ -e ${ODIR}/blast_logs/ blast2_${j}_${NAME}.err \n\n\n sh ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${st} -o ${ODIR} -j ${j} -l ${l} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast2.sh
-	   qsub ${ODIR}/blast_jobs/${j}_blast2.sh
-    done
- else
-  echo " "
-  echo "${str} did not pass the minimum criteria that passes ecoPCR reads to the next step."
-  rm ${str}
-  echo " Don't panic ${str} was deleted because it was empty, and we do not need it in the next step"
+   echo " "
+   echo "${str} has ecoPCR reads that passed the minimum criteria to move to the next step."
+   # split ecopcr output into files with 500 reads each
+   split -l 1000 ${str} ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_
+    # do something as file has data
+   i=1
+   for nam in ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_*
+	 do
+	 nam1=${nam%_*}
+	 # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
+     cp ${nam} ${nam1}_${i}
+     rm ${nam}
+	   ((i=i+1))
+   done
+    ### count number of files in the directory
+   file_count=$( shopt -s nullglob ; set -- ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_* ; echo $#)
+     # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
+   array_var="\$SGE_TASK_ID"
+   printf "#!/bin/bash\n#$ -l highp,h_rt=05:00:00,h_data=30G\n#$ -N blast1_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/blast1_${j}_${NAME}.out\n#$ -e ${ODIR}/blast_logs/ blast1_${j}_${NAME}.err -t 1-${file_count}\n\n\n sh ${DB}/scripts/sub_blast1.sh -n ${NAME} -q ${nam1}_${array_var} -o ${ODIR} -j ${j} -l blast_ready_${array_var} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast1.sh
+   qsub ${ODIR}/blast_jobs/${j}_blast1.sh"
+   printf "#!/bin/bash\n#$ -l highp,h_rt=05:00:00,h_data=30G\n#$ -N blast2_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/ blast2_${j}_${NAME}\n#$ -e ${ODIR}/blast_logs/ blast2_${j}_${NAME}.err -t 1-${file_count}\n\n\n sh ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${nam1}_${array_var} -o ${ODIR} -j ${j} -l blast_ready_${array_var} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast2.sh
+   qsub ${ODIR}/blast_jobs/${j}_blast2.sh"
+
+  else
+   echo " "
+   echo "${str} did not pass the minimum criteria that passes ecoPCR reads to the next step."
+   rm ${str}
+   echo " Don't panic ${str} was deleted because it was empty, and we do not need it in the next step"
+  # do something as file is empty
  fi
 done
 ###
+
 echo "  Once all array jobs have run, submit crux_par2.sh"
