@@ -1,7 +1,7 @@
 #! /bin/bash
 
 ### this script is run as follows
-# sh ~/crux_part2.sh -n <primer_name> -f <forward_primer> -r <reverse_primer> -l <shortest amplicon expected> -m <longest amplicon expected> -o <output_directory> -d <database_directory> -c <clean up intermediate files y/n> -h <user>
+# sh ~/crux_release_V1_from_blast_out.sh -n <primer_name> -f <forward_primer> -r <reverse_primer> -l <shortest amplicon expected> -m <longest amplicon expected> -o <output_directory> -d <database_directory> -c <clean up intermediate files y/n> -h <user>
 NAME=""
 FP=""
 RP=""
@@ -54,18 +54,21 @@ ${BOWTIE2}
 
 
 ##########################
-# Part 2.1: Cleaning up blast results
+# Part 3.1: Cleaning up blast results
 ##########################
 
 ################################ once all array jobs are finished run this script
 echo " "
 echo " "
-echo "Part 2.1: Cleaning up blast results"
+echo "Part 3.1: Cleaning up blast results"
 echo "For each set of BLAST 1 and 2 results"
 echo "     Merge and De-replicate by NCBI accession version numbers, and convert to fasta format."
 echo "     Then use entrez-qiime to generate a corresponding taxonomy file, and clean the blast output and taxonomy file to eliminate poorly annotated sequences."
 mkdir -p ${ODIR}/${NAME}_db_filtered_to_remove_ambigous_taxonomy/${NAME}_fasta_and_taxonomy/
 mkdir -p ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy
+
+# merge all clean BLAST 1 hits, add to blast out file
+cat ${ODIR}/${NAME}_ecoPCR/cleaned/${NAME}_OB_dat_*_std_*/blast1_all.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_all1_blast.fasta
 
 # for each BLAST 2 fasta folder
 for str in ${ODIR}/${NAME}_BLAST/${NAME}_*_out
@@ -99,12 +102,12 @@ echo "... ${j} final fasta and taxonomy database complete"
 
 
 ##########################
-# Part 2.2: Turn the reference libraries into Bowtie2 searchable libraries
+# Part 3.2: Turn the reference libraries into Bowtie2 searchable libraries
 ##########################
 
 echo " "
 echo " "
-echo "Part 2.2:"
+echo "Part 3.2:"
 echo "The bowtie2 database files for ${NAME} can be found in the ${NAME}_bowtie2_databases within the ${NAME}_db_unfiltered and ${NAME}_db_filtered_to_remove_ambigous_taxonomy folder's in ${ODIR}:"
 #make bowtie2 databases for filtered and unfiltered database
 mkdir -p ${ODIR}/${NAME}_db_unfiltered/${NAME}_bowtie2_database
@@ -121,12 +124,12 @@ echo " "
 
 
 ##########################
-# Part 2.3: Delete the intermediate steps
+# Part 3.3: Delete the intermediate steps
 ##########################
 
 echo " "
 echo " "
-echo "Part 2.3:"
+echo "Part 3.3:"
 echo "Deleting the intermediate files: ${CLEAN}"
 if [ ${CLEAN} = "n" ]
  then

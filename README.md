@@ -175,14 +175,24 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
   * ecoPCR parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
 2. ecoPCR results are de-replicated based on taxon id (taxid), and converted to fasta format.
 3. cutadapt is used to verify and retain only the ecoPCR reads with correct primer sequences, then trim the primers from the 5' and 3' ends.
-4. Clean fasta files are used as seeds to generate full length BLAST libraries.
+4. Clean fasta files are used as seeds to generate a full length BLAST library, an up to 70% (or user's choice) length BLAST library.
   * these seed files are broken in to 500 read chunks and blasted as an array against blasted against the NCBI nucleotide blast databases using blastn.
-  * Only full length hits with 50% identity or better are accepted.
-  * up to 5000 hits are retained
+  * The full length library:
+    * minimum percent of subject that needs to be covered by the query = 50%
+    * minimum percent identity of the query relative to the subject = 100%    
+    * up to 10000 hits are retained
+
+  * The partial length library:
+    * minimum percent of subject that needs to be covered by the query = 70%
+    * minimum percent identity of the query relative to the subject = 70%
+    * up to 10000 hits are retained
+
+  * blastn parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
+  * For CO1 this requires up to ~25 GB of memory for 1.5 hours
   * BLAST array jobs submission scripts can be found in:
 
   ```
-  ~/crux_release_V1_db/CO1/blast_jobs/*_blast1.sh
+  ~/crux_release_V1_db/CO1/blast_jobs/*_blast2.sh
   ```
 
 The command for CRUX Part 1 is as follows:
@@ -197,30 +207,7 @@ The command for CRUX Part 1 is as follows:
   sh ~/crux_release_V1_db/crux_part1.sh -n CO1 -f GGWACWGGWTGAACWGTWTAYCCYCC  -r TANACYTCnGGRTGNCCRAARAAYCA -l 200 -m 650 -d ~/crux_release_V1_db -o ~/crux_release_V1_db/CO1 -c n -h eecurd
   ```
 
-### Crux Part 2: Blast 2
-1. The BLAST results from BLAST 1 are dereplicated by NCBI version accession number
-2. The fasta files are broken into smaller pieces and once agin blasted against the NCBI nucleotide blast databases using blastn.
-  * blastn parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
-	* default parameters are
-	     * e-value = 0.0000000001
-	     * minimum percent of subject that needs to be covered by the query = 80%
-	     * minimum percent identity of the query relative to the subject = 70%
-	     * maximum number of hits to retain per subject = 2000
-	     * number of threads to launch = 40
-  * For CO1 this requires up to ~25 GB of memory for 1.5 hours
-  * BLAST array jobs submission scripts can be found in:
-
-  ```
-  ~/crux_release_V1_db/CO1/blast_jobs/*_blast2.sh
-  ```
-
-The command to run CRUX Part 2 is:
-
-```
-sh crux_part2.sh -n metabarcode_target_name -f forward_primer_sequence -r reverse_primer_sequence -l shortest expected length of an amplicon -m longest expected length of an amplicon -d path_to_CRUX_db_folder -o path_to_output_folder -c clean up intermediate files "y/n" -h "cluster username"
-```
-
-### Crux Part 3: Cleaning up blast results, generating bowtie2 libraries, and removing intermediate steps
+### Crux Part 2: Cleaning up blast results, generating bowtie2 libraries, and removing intermediate steps
 1. The blast results are sorted by length (longest to shortest) and then de-replicated by NCBI accession version number and converted into fasta format. Only the longest instance of a read is retained.
 2. entrez-qiime is used to determine taxonomy for each read based on NCBI version accession number.
 3. An additional data base of taxonomy filtered reads is generated.  
@@ -228,10 +215,10 @@ sh crux_part2.sh -n metabarcode_target_name -f forward_primer_sequence -r revers
 4. Build bowtie2 index libraries for the filtered and unfiltered Databases
 5. Remove intermediate steps
 
-The command to run CRUX Part 3 is:
+The command to run CRUX Part 2 is:
 
   ```
-  sh crux_part3.sh -n metabarcode_target_name -f forward_primer_sequence -r reverse_primer_sequence -l shortest expected length of an amplicon -m longest expected length of an amplicon -d path_to_CRUX_db_folder -o path_to_output_folder -c clean up intermediate files "y/n" -h "cluster username"
+  sh crux_part2.sh -n metabarcode_target_name -f forward_primer_sequence -r reverse_primer_sequence -l shortest expected length of an amplicon -m longest expected length of an amplicon -d path_to_CRUX_db_folder -o path_to_output_folder -c clean up intermediate files "y/n" -h "cluster username"
   ```
 
 The database files are found in:

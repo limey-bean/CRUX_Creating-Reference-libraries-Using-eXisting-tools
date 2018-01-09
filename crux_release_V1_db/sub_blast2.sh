@@ -27,16 +27,16 @@ source ${DB}/scripts/crux_config.sh
 
 #submit blast job for a given fasta file
 
-${BLASTn_CMD} -query ${QU} -out ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/raw/${FILE}_blast_out.txt -db ${BLAST_DB} -evalue ${BLAST_eVALUE} -outfmt "6 saccver staxid sseq" -num_threads ${BLAST_NUM_THREADS} -perc_identity ${BLAST_PERC_IDENTITY} -qcov_hsp_perc ${BLAST_HSP_PERC} -num_alignments ${BLAST_NUM_ALIGNMENTS} -gapopen 1 -gapextend 1
+${BLASTn_CMD} -query ${QU} -out ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/raw/${FILE}_blast2_out.txt -db ${BLAST_DB} -evalue ${BLAST_eVALUE} -outfmt "6 saccver staxid sseq" -num_threads ${BLAST_NUM_THREADS} -perc_identity ${BLAST_PERC_IDENTITY} -qcov_hsp_perc ${BLAST_HSP_PERC} -num_alignments ${BLAST_NUM_ALIGNMENTS} -gapopen 1 -gapextend 1
 
 # remove duplicate version accession numbers and convert to fasta file
 
-cat ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/raw/${FILE}_blast_out.txt | sed "s/-//g" | awk 'BEGIN { FS="\t"; } {print ">"$1"\n"$3}' >> ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}blast_out.fasta
+cat ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/raw/${FILE}_blast2_out.txt | sed "s/-//g" | awk 'BEGIN { FS="\t"; } {print ">"$1"\n"$3}' >> ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}_blast2_out.fasta
 
-awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}blast_out.fasta  | awk -F '\t' '{printf("%d\t%s\n",length($2),$0);}' | sort -k1,1rn | cut -f 2- | tr "\t" "\n" >> ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}blast_out.fasta.temp
+awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}_blast2_out.fasta  | awk -F '\t' '{printf("%d\t%s\n",length($2),$0);}' | sort -k1,1rn | cut -f 2- | tr "\t" "\n" >> ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}_blast2_out.fasta.temp
 
-awk '/^>/{f=!d[$1];d[$1]=1}f' ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}blast_out.fasta.temp > ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}blast_out.fasta
+awk '/^>/{f=!d[$1];d[$1]=1}f' ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}_blast2_out.fasta.temp > ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}_blast2_out.fasta
 
-rm ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}blast_out.fasta.temp
+rm ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}_blast2_out.fasta.temp
 
-rm ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/raw/${FILE}_blast_out.txt
+rm ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/raw/${FILE}_blast2_out.txt

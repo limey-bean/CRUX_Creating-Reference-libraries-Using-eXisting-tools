@@ -1,7 +1,7 @@
 #! /bin/bash
 
 ### this script is run as follows
-# sh ~/crux_release_V1_from_blast_out.sh -n <primer_name> -f <forward_primer> -r <reverse_primer> -l <shortest amplicon expected> -m <longest amplicon expected> -o <output_directory> -d <database_directory> -c <clean up intermediate files y/n> -h <user>
+# sh ~/crux_part1.sh -n <primer_name> -f <forward_primer> -r <reverse_primer> -l <shortest amplicon expected> -m <longest amplicon expected> -o <output_directory> -d <database_directory> -c <clean up intermediate files y/n> -h <user>
 NAME=""
 FP=""
 RP=""
@@ -150,9 +150,11 @@ do
   	for st in ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_*
 	  do
      l=${st#${ODIR}/${NAME}_ecoPCR/cleaned/${j}/}
-     # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
-     printf "#!/bin/bash\n#$ -l highp,h_rt=05:00:00,h_data=30G\n#$ -N blast1_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/${j}_paired.out\n#$ -e ${ODIR}/blast_logs/${j}_paired.err \n\n\n sh ${DB}/scripts/sub_blast.sh -n ${NAME} -q ${st} -o ${ODIR} -j ${j} -l ${l} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast1.sh
+     # submit 2blast jobs for each file.  One that collects partial length hits, and one that collects full length hits
+     printf "#!/bin/bash\n#$ -l highp,h_rt=05:00:00,h_data=30G\n#$ -N blast1_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/blast1_${j}_${NAME}.out\n#$ -e ${ODIR}/blast_logs/ blast1_${j}_${NAME}.err \n\n\n sh ${DB}/scripts/sub_blast1.sh -n ${NAME} -q ${st} -o ${ODIR} -j ${j} -l ${l} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast1.sh
 	   qsub ${ODIR}/blast_jobs/${j}_blast1.sh
+     printf "#!/bin/bash\n#$ -l highp,h_rt=05:00:00,h_data=30G\n#$ -N blast2_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/ blast2_${j}_${NAME}\n#$ -e ${ODIR}/blast_logs/ blast2_${j}_${NAME}.err \n\n\n sh ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${st} -o ${ODIR} -j ${j} -l ${l} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast2.sh
+	   qsub ${ODIR}/blast_jobs/${j}_blast2.sh
     done
  else
   echo " "
