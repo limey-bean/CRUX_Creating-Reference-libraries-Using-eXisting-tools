@@ -75,16 +75,14 @@ do
   echo "${str}"
   echo "${str}/fasta/*.fasta"
   # add the blast 2 hits to the other length sorted dereplicated clean blast2 hits
-  cat ${str}/fasta/*.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta
+  cat ${str}/fasta/*.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${j}blast.fasta
   # length sort and dereplicate Reads
-  awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta  | awk -F '\t' '{printf("%d\t%s\n",length($2),$0);}' | sort -k1,1rn | cut -f 2- | tr "\t" "\n" > ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta.temp
-  awk '/^>/{f=!d[$1];d[$1]=1}f' ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta.temp > ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta
-  rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast.fasta.temp
-done
+  awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${j}blast.fasta  | awk -F '\t' '{printf("%d\t%s\n",length($2),$0);}' | sort -k1,1rn | cut -f 2- | tr "\t" "\n" > ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${j}blast.fasta.temp
+  awk '/^>/{f=!d[$1];d[$1]=1}f' ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${j}blast.fasta.temp > ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta
+  rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${j}blast.fasta.temp
+  rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${j}blast.fasta
 
-#change the name and delete the redundant stuff
-cat ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_*_blast.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta
-# rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_*_blast.fasta
+done
 
 
 ### add taxonomy using entrez_qiime.py
