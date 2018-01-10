@@ -12,7 +12,7 @@ CRUX generates custon reference libraries by first running in silico PCR (**ecoP
 
 Because many sequencing records are deposited to Genbank (Benson et al., 2012) with the primer regions removed from the read, we **BLAST** (Camacho et al., 2009) the seed library against the NCBI nucleotide blast database (ftp://ftp.ncbi.nlm.nih.gov/blast/). CRUX runs blastn twice.  The first blastn run only accepts full length reads (e.g. the same length as the Reference) and then de-replicates the resulting fasta files by NCBI accession version number. The second blastn run accepts reads up to 70% of full length (because many hits to metabarcodes do not cover the entire read length).  The resulting reads are sorted by length and de-replicated so that only the longest version of a read is retained.
 
-A corresponding taxonomy identification file (superkingdom, phylum, class, order, family, genus, species) is generated from the fasta formatted blast output using **entrez-qiime** (https://github.com/bakerccm/entrez_qiime), the NCBI’s taxonomy dump and map of association between taxonomy and accession version numbers (ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/). Because NCBI taxonomy is not always complete (e.g. uncultured organisms, organisms with unknown taxonomy, etc.) CRUX generates two reference files; filtered and unfiltered.  The filtered reference files exclude reads with the following in their taxonomic path: 'uncultured', 'environmental', 'sample', of 'NA;NA;NA;NA'.
+A corresponding taxonomy identification file (superkingdom, phylum, class, order, family, genus, species) is generated from the fasta formatted blast output using **entrez-qiime** (https://github.com/bakerccm/entrez_qiime), the NCBI’s taxonomy dump and map of association between taxonomy and accession version numbers (ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/). Because NCBI taxonomy is not always complete (e.g. uncultured organisms, organisms with unknown taxonomy, etc.) CRUX generates two sets of reference files: filtered and unfiltered.  The filtered reference files exclude reads with the following in their taxonomic path: 'uncultured', 'environmental', 'sample', of 'NA;NA;NA;NA'.
 
 The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Anacapa)runs **Bowtie2** (Langmead et al., 2009) to assigns reads to these references databases and generate a corresponding taxonomy file. Thus the final step is to generate **Bowtie2** formatted data index libraries.
 
@@ -93,7 +93,7 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
   mkdir ~/crux_release_V1_db/NCBI_blast_nt
   cd ~/crux_release_V1_db/NCBI_blast_nt
   wget ftp://ftp.ncbi.nlm.nih.gov/blast/db/nt*
-  gunzip tar -zxvf \*.tar.gz
+  tar -xvzf *.tar.gz
   ```
 
 4. Database files for generating ecoPCR compatible OBItools libraries
@@ -156,12 +156,12 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
     * Depending on the size of the EMBL database files this may take a lot of time and a lot of RAM
     * The command is as follows:
 
-    ```ruby
+    ```
     obiconvert -t </path/to/taxonfile> --embl --ecopcrdb-output=/path/to/output /path/to/inputs --skip-on-error
     ```
 	  e.g.
 
-    ```ruby
+    ```
     obiconvert -t ~/crux_release_V1_db/TAXO --embl --ecopcrdb-output=~/crux_release_V1_db/Obitools_databases/OB_dat_EMBL_6167017_std_pro ~/EMBL_pro/\*.dat --skip-on-error
     ```
 
@@ -170,13 +170,13 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 
 ## Step by Step Explanation of CRUX
 
-### Crux Part 1: ecoPCR and BLAST 1
+### Crux Part 1: ecoPCR, BLAST 1 and BLAST 2
 1. Run ecoPCR using the user specified primer on the user generated OBItools compatible databases.  
-  * ecoPCR parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
+  * ecoPCR parameters can be altered in the /crux_release_V1_db/scripts/crux_vars.sh file
 2. ecoPCR results are de-replicated based on taxon id (taxid), and converted to fasta format.
 3. cutadapt is used to verify and retain only the ecoPCR reads with correct primer sequences, then trim the primers from the 5' and 3' ends.
-4. Clean fasta files are used as seeds to generate a full length BLAST library, an up to 70% (or user's choice) length BLAST library.
-  * these seed files are broken in to 500 read chunks and blasted as an array against blasted against the NCBI nucleotide blast databases using blastn.
+4. Clean fasta files are used as seeds to generate two BLAST libraries: a full length BLAST library, and an up to 70% (or user's choice) length BLAST library.
+  * These seed files are broken in to 500 read chunks and blasted as an array against blasted against the NCBI nucleotide blast databases using blastn.
   * The full length library:
     * minimum percent of subject that needs to be covered by the query = 50%
     * minimum percent identity of the query relative to the subject = 100%    
@@ -187,12 +187,12 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
     * minimum percent identity of the query relative to the subject = 70%
     * up to 10000 hits are retained
 
-  * blastn parameters can be altered in the /crux_release_V1_db/crux_vars.sh file
+  * blastn parameters can be altered in the /crux_release_V1_db/scripts/crux_vars.sh file
   * For CO1 this requires up to ~25 GB of memory for 1.5 hours
   * BLAST array jobs submission scripts can be found in:
 
   ```
-  ~/crux_release_V1_db/CO1/blast_jobs/*_blast2.sh
+  ~/crux_release_V1_db/<metabarcode>/blast_jobs/*_blast2.sh
   ```
 
 The command for CRUX Part 1 is as follows:
@@ -204,12 +204,12 @@ The command for CRUX Part 1 is as follows:
 * An example:
 
   ```
-  sh ~/crux_release_V1_db/crux_part1.sh -n CO1 -f GGWACWGGWTGAACWGTWTAYCCYCC  -r TANACYTCnGGRTGNCCRAARAAYCA -l 200 -m 650 -d ~/crux_release_V1_db -o ~/crux_release_V1_db/CO1 -c n -h eecurd
+  sh ~/crux_release_V1_db/scripts/crux_part1.sh -n CO1 -f GGWACWGGWTGAACWGTWTAYCCYCC  -r TANACYTCnGGRTGNCCRAARAAYCA -l 200 -m 650 -d ~/crux_release_V1_db -o ~/crux_release_V1_db/CO1 -c n -h eecurd
   ```
 
 ### Crux Part 2: Cleaning up blast results, generating bowtie2 libraries, and removing intermediate steps
-1. The blast results are sorted by length (longest to shortest) and then de-replicated by NCBI accession version number and converted into fasta format. Only the longest instance of a read is retained.
-2. entrez-qiime is used to determine taxonomy for each read based on NCBI version accession number.
+1. The blast results are de-replicated by NCBI accession version number and converted into fasta format. Only the longest instance of a read is retained.
+2. entrez-qiime.py is used to determine taxonomy for each read based on NCBI version accession number.
 3. An additional data base of taxonomy filtered reads is generated.  
   * Reads with taxonomy identified as NA;NA;NA;NA, or with uncultured, unknown, unassigned, or environmental in the name are removed from the cleaned blast results fasta output and corresponding taxonomy file.
 4. Build bowtie2 index libraries for the filtered and unfiltered Databases
