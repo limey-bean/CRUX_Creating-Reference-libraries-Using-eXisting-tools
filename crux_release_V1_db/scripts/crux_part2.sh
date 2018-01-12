@@ -67,10 +67,20 @@ echo "     Then use entrez-qiime to generate a corresponding taxonomy file, and 
 mkdir -p ${ODIR}/${NAME}_db_filtered_to_remove_ambigous_taxonomy/${NAME}_fasta_and_taxonomy/
 mkdir -p ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy
 
-# for each BLAST 2 fasta folder
-cat  ${ODIR}/${NAME}_BLAST/*BLAST_out/fasta/*.fasta >> ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
-python ${DB}/scripts/combine_and_dereplicate_fasta.py -o ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta -a ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
-rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_blast.fasta
+# for each BLAST_out fasta folder
+for str in ${ODIR}/${NAME}_BLAST/${NAME}_*_out
+do
+  str1=${str%_BLAST_out}
+  j=${str1#${ODIR}/${NAME}_BLAST/${NAME}_}
+  echo "${str}"
+  echo "${j}"
+  # reduce size blast files by combining and dereplicating by length.
+  python ${DB}/scripts/combine_and_dereplicate_fasta.py -o ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_${j}_blast_out.fasta -a ${str}/fasta/*_out.fasta
+done
+
+# for all of of derepliated blast hits, combine and depreplicate by length
+python ${DB}/scripts/combine_and_dereplicate_fasta.py -o ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta -a ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/*_blast_out.fasta
+rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/*_blast_out.fasta
 
 ### add taxonomy using entrez_qiime.py
 echo "...Running ${j} entrez-qiime and cleaning up fasta and taxonomy files"

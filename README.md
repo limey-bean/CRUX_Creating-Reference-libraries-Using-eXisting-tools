@@ -1,6 +1,6 @@
 # CRUX: Creating Reference libraries Using eXisting tools
 
-### CRUX		last updated 1-08-2018
+### CRUX		last updated 1-10-2018
 #### Written by Emily Curd (eecurd@g.ucla.edu), Gaurav Kandlikar (gkandlikar@ucla.edu), and Jesse Gomer (jessegomer@gmail.com)
 #### Developed at UCLA for the University of California Conservation Consortium's CALeDNA Program
 
@@ -12,7 +12,7 @@ CRUX generates custon reference libraries by first running in silico PCR (**ecoP
 
 Because many sequencing records are deposited to Genbank (Benson et al., 2012) with the primer regions removed from the read, we **BLAST** (Camacho et al., 2009) the seed library against the NCBI nucleotide blast database (ftp://ftp.ncbi.nlm.nih.gov/blast/). CRUX runs blastn twice.  The first blastn run only accepts full length reads (e.g. the same length as the Reference) and then de-replicates the resulting fasta files by NCBI accession version number. The second blastn run accepts reads up to 70% of full length (because many hits to metabarcodes do not cover the entire read length).  The resulting reads are sorted by length and de-replicated so that only the longest version of a read is retained.
 
-A corresponding taxonomy identification file (superkingdom, phylum, class, order, family, genus, species) is generated from the fasta formatted blast output using **entrez-qiime** (https://github.com/bakerccm/entrez_qiime), the NCBI’s taxonomy dump and map of association between taxonomy and accession version numbers (ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/). Because NCBI taxonomy is not always complete (e.g. uncultured organisms, organisms with unknown taxonomy, etc.) CRUX generates two sets of reference files: filtered and unfiltered.  The filtered reference files exclude reads with the following in their taxonomic path: 'uncultured', 'environmental', 'sample', of 'NA;NA;NA;NA'.
+A corresponding taxonomy identification file (superkingdom, phylum, class, order, family, genus, species) is generated from the fasta formatted blast output using **entrez-qiime** (https://github.com/bakerccm/entrez_qiime), the NCBI’s taxonomy dump and map of association between taxonomy and accession version numbers (ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/). Because NCBI taxonomy is not always complete (e.g. uncultured organisms, organisms with unknown taxonomy, etc.) CRUX generates two sets of reference files: filtered and unfiltered.  The filtered reference files exclude reads with the following in their taxonomic path: 'uncultured', 'environmental', 'sample', or 'NA;NA;NA;NA'.
 
 The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Anacapa)runs **Bowtie2** (Langmead et al., 2009) to assigns reads to these references databases and generate a corresponding taxonomy file. Thus the final step is to generate **Bowtie2** formatted data index libraries.
 
