@@ -48,6 +48,7 @@ done
 # Source the config and vars file so that we have programs and variables available to us
 source $DB/scripts/crux_vars.sh
 source $DB/scripts/crux_config.sh
+source $DB/scripts/crux_qsub_templates.sh
 ${MODULE_SOURCE}
 ${QIIME}
 ${BOWTIE2}
@@ -77,7 +78,9 @@ do
  db1=${db%/}
  j=${db1#${OBI_DB}/}
  echo "..."${j}" ecoPCR is running"
- ${ecoPCR} -d ${db}${j} -e ${ECOPCR_e} -l ${SHRT} -L ${LNG} ${FP} ${RP} -D 1 > ${ODIR}/${NAME}_ecoPCR/raw_out/${NAME}_${j}_ecoPCR_out
+ ECOCMD="${ecoPCR} -d ${db}${j} -e ${ECOPCR_e} -l ${SHRT} -L ${LNG} ${FP} ${RP} -D 1"
+ echo $ECOCMD # print full command for debugging
+ ${ECOCMD} > ${ODIR}/${NAME}_ecoPCR/raw_out/${NAME}_${j}_ecoPCR_out
  echo "..."${j}" ecoPCR is finished"
 date
 done
@@ -94,6 +97,7 @@ echo "Clean ${NAME} ecoPCR output for blasting"
 mkdir -p ${ODIR}/${NAME}_ecoPCR/
 mkdir -p ${ODIR}/${NAME}_ecoPCR/clean_up
 mkdir -p ${ODIR}/${NAME}_ecoPCR/cleaned
+mkdir -p ${DB}/cutadapt_files
 # make primer files for cutadapt step
 printf ">${NAME}_F\n${FP}\n>${NAME}_R\n${RP}" > "${DB}/cutadapt_files/${NAME}.fasta"
 python ${DB}/scripts/crux_format_primers_cutadapt.py ${DB}/cutadapt_files/${NAME}.fasta ${DB}/cutadapt_files/g_${NAME}.fasta ${DB}/cutadapt_files/a_${NAME}.fasta
@@ -103,7 +107,7 @@ do
  str1=${str%_ecoPCR_out}
  j=${str1#${ODIR}/${NAME}_ecoPCR/raw_out/}
  #reformat ecoPCR out and remove duplicate reads by taxid
- tail -n +14 ${str} |cut -d "|" -f 3,21|sed "s/ | /,/g"|awk -F"," '!_[$1]++' | sed "s/\s//g" |awk 'BEGIN { FS=","; } {print ">"$1"\n"$2}' > ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_ecoPCR_blast_input.fasta
+ tail -n +14 ${str} | cut -d "|" -f 3,21| sed "s/ | /,/g"| awk -F"," '!_[$1]++' | sed "s/\s//g" | awk 'BEGIN { FS=","; } {print ">"$1"\n"$2}' > ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_ecoPCR_blast_input.fasta
  #run cut adapt
  ${CUTADAPT} -e .2 -a file:${DB}/cutadapt_files/a_${NAME}.fasta  --untrimmed-output ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_untrimmed_1.fasta -o ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_clean.fasta ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_ecoPCR_blast_input.fasta >> ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_cutadapt-report.txt
  ${CUTADAPT} -e .2 -g file:${DB}/cutadapt_files/g_${NAME}.fasta  --untrimmed-output ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_untrimmed_2.fasta -o ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_and_g_clean.fasta ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_clean.fasta >> ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_cutadapt-report.txt
@@ -155,9 +159,9 @@ do
    file_count=$( shopt -s nullglob ; set -- ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_* ; echo $#)
      # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
    array_var="\$SGE_TASK_ID"
-   printf "#!/bin/bash\n#$ -l highp,h_rt=05:00:00,h_data=30G\n#$ -N blast1_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/blast1_${j}_${NAME}.out\n#$ -e ${ODIR}/blast_logs/blast1_${j}_${NAME}.err\n#$ -t 1-${file_count}\n\n\nsh ${DB}/scripts/sub_blast1.sh -n ${NAME} -q ${nam1}_${array_var} -o ${ODIR} -j ${j} -l blast_ready_${array_var} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast1.sh
+   printf "$(CRUX_PART1_BLAST1_TEMPLATE)" > ${ODIR}/blast_jobs/${j}_blast1.sh
    qsub ${ODIR}/blast_jobs/${j}_blast1.sh
-   printf "#!/bin/bash\n#$ -l highp,h_rt=05:00:00,h_data=30G\n#$ -N blast2_${j}_${NAME}\n#$ -cwd\n#$ -m bea\n#$ -M ${UN} \n#$ -o ${ODIR}/blast_logs/blast2_${j}_${NAME}\n#$ -e ${ODIR}/blast_logs/blast2_${j}_${NAME}.err\n#$ -t 1-${file_count}\n\n\nsh ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${nam1}_${array_var} -o ${ODIR} -j ${j} -l blast_ready_${array_var} -d ${DB} \n" >> ${ODIR}/blast_jobs/${j}_blast2.sh
+   printf "$(CRUX_PART1_BLAST2_TEMPLATE)" > ${ODIR}/blast_jobs/${j}_blast2.sh
    qsub ${ODIR}/blast_jobs/${j}_blast2.sh
 
   else
@@ -170,4 +174,4 @@ do
 done
 ###
 
-echo "  Once all array jobs have run, submit crux_par2.sh"
+echo "  Once all array jobs have run, submit crux_part2.sh"

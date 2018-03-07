@@ -63,6 +63,9 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
         http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
 	* Bowtie2 does not need to be installed in the crux_release_V1_db folder, however you will need to verify that the Crux_config.sh is modified for you computing environment.
 
+7. PyCogent
+        http://pycogent.org/install.html
+  * `pip install cogent` or if you get an error `DONT_USE_PYREX=1 pip install cogent`. Requires numpy too.
 
 **__Databases to download__**
 ***__Any time you download a new blastn database, Download the newest TAXO dump and NCBI accession2taxonomy file!!!__***
