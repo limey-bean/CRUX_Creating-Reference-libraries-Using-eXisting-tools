@@ -7,7 +7,7 @@
 ###########################
 
 # EcoPCR parameters
-ECOPCR_e="5"						# max errors allowed by oligonucleotide (0 by default)
+ECOPCR_e="3"						# max errors allowed by oligonucleotide (0 by default)
 
 # BLAST 1 parameters
 BLAST1_eVALUE="0.00001"			# Expect value
