@@ -14,7 +14,7 @@ Because many sequencing records are deposited to Genbank (Benson et al., 2012) w
 
 A corresponding taxonomy identification file (superkingdom, phylum, class, order, family, genus, species) is generated from the fasta formatted blast output using **entrez-qiime** (https://github.com/bakerccm/entrez_qiime), the NCBI’s taxonomy dump and map of association between taxonomy and accession version numbers (ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/). Because NCBI taxonomy is not always complete (e.g. uncultured organisms, organisms with unknown taxonomy, etc.) CRUX generates two sets of reference files: filtered and unfiltered.  The filtered reference files exclude reads with the following in their taxonomic path: 'uncultured', 'environmental', 'sample', or 'NA;NA;NA;NA'.
 
-The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Anacapa)runs **Bowtie2** (Langmead et al., 2009) to assigns reads to these references databases and generate a corresponding taxonomy file. Thus the final step is to generate **Bowtie2** formatted data index libraries.
+The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Anacapa)runs **Bowtie2** (Langmead et al., 2009) to assigns reads to these references databases and generate a corresponding taxonomy file. Thus the final step is to generate **Bowtie2** formatted data index libraries.
 
 ## Overview
 <p align="center">
@@ -22,7 +22,24 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 </p>
 
 ## Before CRUX is operable, you will need to download, install and/or build several programs and databases.
-**__First Download the crux_release_V1_db folder.__** The executables and database folders should be accessible from this folder. However, if you already have any these programs or databases, there is no need to add them to the crux_release_V1_db folder. Instead update the file paths or loading commands to the Crux_config.sh and crux_vars.sh files.
+**__First clone the CRUX_Creating-Reference-libraries-Using-eXisting-tools repository.__** Within the repository is the __crux_db__ directory.  All of the the executables, some of the programs and all database folders should be accessible from this folder. However, if you already have any these programs or databases, there is no need to add them to the crux_db folder. Instead update the file paths or loading commands to the crux_config.sh and crux_vars.sh files in the ~CRUX_Creating-Reference-libraries-Using-eXisting-tools/crux_db/scripts directory.  The final directory structure will resemble the following:
+```
+~/CRUX_Creating-Reference-libraries-Using-eXisting-tools/
+	* ~/crux_db
+		* ~/accession2taxonomy    *added by the user*
+		* ~/crux.sh
+		* ~/ecoPCR    *added by the user*
+		* ~/ncbi-blast-2.6.0+   *added by the user*
+		* ~/NCBI_blast_nt     *added by the user*
+		* ~/Obitools_databases      *added by the user*
+		* ~/scripts
+		* ~/TAXO      *added by the user*
+	* ~/.gitignore
+	* ~/Crux_flow.png
+	* ~/Manual_addition_or_reads_to_CRUX.txt
+	* ~/README.md
+```
+**The folders that are added by the user can be stored elsewhere as long as the file paths are correct in the crux_config.sh and crux_vars.sh files.**
 
 **__Programs__**
 
@@ -30,38 +47,38 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 1. OBItools:
          https://git.metabarcoding.org/obitools/obitools/wikis/home
 	* OBItools is used to generate reference libraries for the ecoPCR in silico PCR step for CRUX.
-	* OBItools does not need to be installed in the crux_release_V1_db folder.
+	* OBItools does not need to be installed in the crux_db folder.
 	* Installation information can be found here:  
            http://metabarcoding.org//obitools/doc/welcome.html#installing-the-obitools
 
 2. ecoPCR:
          https://git.metabarcoding.org/obitools/ecopcr/wikis/home
-	* If you are not modifying the Crux_config.sh, then the path to the ecoPCR executable should be as follows:
+	* If you are not modifying the crux_config.sh, then the path to the ecoPCR executable should be as follows:
 
 ```
-~/crux_release_V1_db/ecoPCR/src/ecoPCR
+~/crux_db/ecoPCR/src/ecoPCR
 ```
 
-3. cutadapt:
+3. cutadapt (Version: 1.16):
          http://cutadapt.readthedocs.io/en/stable/index.html
-      * cutadapt does not need to be installed in the crux_release_V1_db folder, however you will need to verify that the Crux_config.sh is modified for you computing environment.
+      * cutadapt does not need to be installed in the crux_db folder, however you will need to verify that the crux_config.sh is modified for you computing environment.
 
-4. BLAST+:
+4. BLAST+ (version 2.6.0):
          https://www.ncbi.nlm.nih.gov/books/NBK279690/
 	* the lastest BLAST executables can be downloaded from: ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.6.0/
-	* If you are not modifying the Crux_config.sh, then the path to the blastn executable should be as follows:
+	* If you are not modifying the crux_config.sh, then the path to the blastn executable should be as follows:
 
   ```
-  ~/crux_release_V1_db/ncbi-blast-2.6.0+/bin/blastn
+  ~/crux_db/ncbi-blast-2.6.0+/bin/blastn
   ```
 
 5. entrez_qiime:
         https://github.com/bakerccm/entrez_qiime
-	* **entrez_qiime.py** is already included in crux_release_V1_db folder
+	* **entrez_qiime.py** is already included in ~/crux_db/scripts directory
 
 6. Bowtie2:
         http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
-	* Bowtie2 does not need to be installed in the crux_release_V1_db folder, however you will need to verify that the Crux_config.sh is modified for you computing environment.
+	* Bowtie2 does not need to be installed in the crux_db folder, however you will need to verify that the crux_config.sh is modified for you computing environment.
 
 
 **__Databases to download__**
@@ -69,20 +86,20 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 
 1. NCBI taxonomy dump:  
         ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
- * If you are not modifying the Crux_config.sh, then the path to the taxonomy folder should be as follows:
+ * If you are not modifying the crux_config.sh, then the path to the taxonomy folder should be as follows:
 
  ```
- ~/crux_release_V1_db/TAXO
+ ~/crux_db/TAXO
  ```
 
   * The folder should contain the following files: delnodes.dmp, merged.dmp, names.dmp, nodes.dmp
   * download information can be found here: https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
 
 2. NCBI accession2taxonomy file: ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
-	* If you are not modifying the Crux_config.sh, then the path to the accession to taxonomy file should be as follows:
+	* If you are not modifying the crux_config.sh, then the path to the accession to taxonomy file should be as follows:
 
-    ```ruby
-    ~/crux_release_V1_db/accession2taxonomy/nucl_gb.accession2taxid
+    ```
+    ~/crux_db/accession2taxonomy/nucl_gb.accession2taxid
     ```
 
 	* download information can be found here: https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
@@ -90,17 +107,24 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 3. NCBI BLAST nt library: ftp://ftp.ncbi.nlm.nih.gov/blast/db/
 
   ```
-  mkdir ~/crux_release_V1_db/NCBI_blast_nt
-  cd ~/crux_release_V1_db/NCBI_blast_nt
+  mkdir ~/crux_db/NCBI_blast_nt
+  cd ~/crux_db/NCBI_blast_nt
   wget ftp://ftp.ncbi.nlm.nih.gov/blast/db/nt*
   for file in nt*.tar.gz; do tar -zxf $file; done
   ```
+  * you should have a file structure as follows:
+    * /NCBI_blast_nt
+	     * ~/nt.00.nhr
+	     * ~/	nt.00.nin
+	     * ~/	nt.00.nnd
+	     * ~/	nt.00.nni
+	     * ~/...
 
 
 4. Database files for generating ecoPCR compatible OBItools libraries
   * __all libraries need to be in__
   ```
-  ~/crux_release_V1_db/Obitools_databases
+  ~/crux_db/Obitools_databases
   ```
   __folder and have__
 
@@ -110,28 +134,64 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
   __as a folder and file prefix__
   * If the names are not correct the run will fail.
   * see Obitools documentation for range of file types that can be converted into ecoPCR searchable libraries
-  * Example using EMBL_date_std database files:
-          ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std
-	* Determine which EMBL databases you wish to include.  
-		* One strategy is to download all of the files for only some of the organism: fun, inv, mam, phg, pln, pro, rod, syn, tgn, vrl, vrt
-		* It is ok to skipped hum, and mus because those reads will be picked up while blasting.
-	* These do not need to be stored in crux_release_V1_db, but they need to be stored as a single folder or as a series of folders based on taxonomic groupings (e.g. store all prokaryotes (pro) in a single and separate folder, store all plant (pln) in a single and separate folder, etc.)
-	* These are very large files, and it is less memory intensive to download them in small batches, and convert them into many small obitools/ecopcr readable databases.
 
+__The following is an example using EMBL std nucleotide database files. This is only one of may ways to build an Obitools database. The CALeDNA CRUX libraries were generated using OBITools databases generated using EMBL std nucleotide database files.__
+
+Step 1. Download EMBL nucleotide library files:
+ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std
+They are grouped by the following:
+```
+Division                 Code
+----------------         ------------------
+Bacteriophage            PHG - common
+Environmental Sample     ENV - common
+Fungal                   FUN - map to PLN (plants + fungal)
+Human                    HUM - map to PRI (primates)
+Invertebrate             INV - common
+Other Mammal             MAM - common
+Other Vertebrate         VRT - common
+Mus musculus             MUS - map to ROD (rodent)
+Plant                    PLN - common
+Prokaryote               PRO - map to BCT (poor name)
+Other Rodent             ROD - common
+Synthetic                SYN - common
+Transgenic               TGN - ??? map to SYN ???
+Unclassified             UNC - map to UNK
+Viral                    VRL - common
+```               
+* For CALeDNA CRUX reference libraries we used FUN, INV, VRT, PLN, PRO, and OTHER (present in older releases e.g 133).
+* We found that the BLAST steps of CRUX pick up a wide diversity of reads and not all EMBL std nucleotide libraries are required to recover taxa. For example, we recovered he same number of mammal species when running CRUX using only the vrt EMBL libraries as when using both the vrt and mam EMBL libraries.
+
+* These are very large files, and it is less memory intensive to download them in small batches, and convert them into many small obitools/ecopcr readable databases.
+
+* In a temporary folder download a single EMBL std nucleotide library
     ```
     wget ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_fun
-    wget ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_pro
     ```
 
-    etc...
+    etc... The libraries will resemble the following:
+    * rel_std_fun_01_r133.dat.gz  
+    * rel_std_fun_02_r133.dat.gz
 
+    Unzip the files
     ```
     gunzip *.gz
     ```
 
+Step 2. Build the libraries
+* The user will need to make the ~/Obitools_databases and subdirectories that reflect the the EMBL std nucleotide databases chosen for building CRUX reference libraries.
+  * The directory structure will resemble the following:
+      * ~/Obitools_databases
+    	 * ~/OB_dat_EMBL_1108017_std_inv    
+    	 * ~/OB_dat_EMBL_1108017_std_pln
+    	 * ~/OB_dat_EMBL_1108017_std_fun
+    	 * ~/OB_dat_EMBL_1108017_std_other
+    	 * ~/OB_dat_EMBL_1108017_std_pro  
+    	 * ~/OB_dat_EMBL_1108017_std_vrt
 
-**__Building OBItools/ecoPCR Readable Databases__**  
- Example: Convert embl databases into obitools/ecopcr readable databases using obiconvert
+      __The subdirectory names will vary depending on the user downloaded EMBL std nucleotide library, date etc. The only requirement it that subdirectory begin with *OB_dat*__
+
+* Convert EMBL std nucleotide databases into obitools/ecopcr readable databases using obiconvert
 * the obiconvert python script is part of the OBItools.
 	* the documentation can be found here:
           http://metabarcoding.org/obitools/doc/scripts/obiconvert.html
@@ -139,21 +199,21 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
           http://metabarcoding.org/obitools/doc/wolves.html
 * The obiconvert command requires:
 	* the path to the ncbi taxonomy folder (-t)
-		* downloaded above ~/crux_release_V1_db/TAXO
+		* downloaded above ~/crux_db/TAXO
 	* the file format (--embl)
 	* the output folder path (--ecopcrdb-output)
 		* the file path needs to be
 
     ```
-    ~/crux_release_V1_db/Obitools_databases/OB_dat_some_folder_name_that_corresponds_to_the_type_of_embl_sequences
+    ~/crux_db/Obitools_databases/OB_dat_some_folder_name_that_corresponds_to_the_type_of_embl_sequences/OB_dat_some_folder_name_that_corresponds_to_the_type_of_embl_sequences
     ```
     e.g.
 
     ```
-    ~/crux_release_V1_db/Obitools_databases/OB_dat_EMBL_6167017_std_pro
+    ~/crux_db/Obitools_databases/OB_dat_EMBL_1108017_std_fun/OB_dat_EMBL_1108017_std_fun
     ```
     * the input file(s) path(s)
-    * e.g. the folder where all prokaryote (pro) files are stored in a single and separate folder
+    * e.g. the folder where all fungal (fun) files are stored in a single and separate folder
     * Depending on the size of the EMBL database files this may take a lot of time and a lot of RAM
     * The command is as follows:
 
@@ -163,26 +223,25 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
 	  e.g.
 
     ```
-    obiconvert -t ~/crux_release_V1_db/TAXO --embl --ecopcrdb-output=~/crux_release_V1_db/Obitools_databases/OB_dat_EMBL_6167017_std_pro ~/EMBL_pro/\*.dat --skip-on-error
+    obiconvert -t ~/crux_db/TAXO --embl --ecopcrdb-output=~/crux_db/Obitools_databases/OB_dat_EMBL_1108017_std_fun/OB_dat_EMBL_1108017_std_fun ~/EMBL_fun/\*.dat --skip-on-error
     ```
-
-    /u/project/rwayne/software/Crux/
-    In Crux, find...
-    Directories:   crux_release_V1_db  
-    Files: Crux_to_do_list.txt  Manual_addition_of_reads_to_CRUX.txt  README.md
-
-    /u/project/rwayne/software/Crux/crux_release_V1_db
-    Directories: accession2taxonomy  cutadapt_files  ecoPCR  ncbi-blast-2.6.0+  NCBI_blast_nt  Obitools_databases  scripts  TAXO
-
+* The resulting files will resemble the following:
+  * ~/OB_dat_EMBL_1108017_std_fun
+    * ~/OB_dat_EMBL_1108017_std_fun_001.sdx
+    * ~/OB_dat_EMBL_1108017_std_fun_002.sdx
+    * ~/OB_dat_EMBL_1108017_std_fun.adx
+    * ~/OB_dat_EMBL_1108017_std_fun.ndx
+    * ~/OB_dat_EMBL_1108017_std_fun.rdx
+    * ~/OB_dat_EMBL_1108017_std_fun.tdx
 
 ## Running CRUX
-### CRUX was developed to run on an a computer cluster with an SGE scheduler
+### CRUX scripts can be run locally on a personal computer (-l see optional arguments below), or in a High Performance Computing Environment (HPC).
 
 ## Step by Step Explanation of CRUX
 
 ### Crux Part 1: ecoPCR, BLAST 1 and BLAST 2
 1. Run ecoPCR using the user specified primer on the user generated OBItools compatible databases.  
-  * ecoPCR parameters can be altered in the /crux_release_V1_db/scripts/crux_vars.sh file
+  * ecoPCR parameters can be altered in the /crux_db/scripts/crux_vars.sh file
 2. ecoPCR results are de-replicated based on taxon id (taxid), and converted to fasta format.
 3. cutadapt is used to verify and retain only the ecoPCR reads with correct primer sequences, then trim the primers from the 5' and 3' ends.
 4. Clean fasta files are used as seeds to generate two BLAST libraries: a full length BLAST library, and an up to 70% (or user's choice) length BLAST library.
@@ -197,51 +256,73 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
     * minimum percent identity of the query relative to the subject = 70%
     * up to 10000 hits are retained
 
-  * blastn parameters can be altered in the /crux_release_V1_db/scripts/crux_vars.sh file
-  * For CO1 this requires up to ~25 GB of memory for 1.5 hours
+  * blastn parameters can be altered in the command line or in  /crux_db/scripts/crux_vars.sh file
+  * On an HPC, each CO1 seed file requires up to ~25 GB of memory for 1.5 hours
   * BLAST array jobs submission scripts can be found in:
 
-  ```
-  ~/crux_release_V1_db/<metabarcode>/blast_jobs/*_blast2.sh
-  ```
-
-The command for CRUX Part 1 is as follows:
 
   ```
-  sh crux_part1.sh -n metabarcode_target_name -f forward_primer_sequence -r reverse_primer_sequence -l shortest expected length of an amplicon -m longest expected length of an amplicon -d path_to_CRUX_db_folder -o path_to_output_folder -c clean up intermediate files "y/n" -h "cluster username"
+  ~/crux_db/<metabarcode>/Run_logs/blast_jobs/*_blast*.sh
   ```
 
-* An example:
+  5. The blast results are de-replicated by NCBI accession version number and converted into fasta format. Only the longest instance of a read is retained.
+  6. entrez-qiime.py is used to determine taxonomy for each read based on NCBI version accession number.
+  7. An additional data base of taxonomy filtered reads is generated.  
+    * Reads with taxonomy identified as NA;NA;NA;NA, or with uncultured, unknown, unassigned, or environmental in the name are removed from the cleaned blast results fasta output and corresponding taxonomy file.
+  8. Build bowtie2 index libraries for the filtered and unfiltered Databases
+  9. Remove intermediate steps
 
-  ```
-  sh ~/crux_release_V1_db/scripts/crux_part1.sh -n CO1 -f GGWACWGGWTGAACWGTWTAYCCYCC  -r TANACYTCnGGRTGNCCRAARAAYCA -l 200 -m 650 -d ~/crux_release_V1_db -o ~/crux_release_V1_db/CO1 -c n -h eecurd
-  ```
-
-### Crux Part 2: Cleaning up blast results, generating bowtie2 libraries, and removing intermediate steps
-1. The blast results are de-replicated by NCBI accession version number and converted into fasta format. Only the longest instance of a read is retained.
-2. entrez-qiime.py is used to determine taxonomy for each read based on NCBI version accession number.
-3. An additional data base of taxonomy filtered reads is generated.  
-  * Reads with taxonomy identified as NA;NA;NA;NA, or with uncultured, unknown, unassigned, or environmental in the name are removed from the cleaned blast results fasta output and corresponding taxonomy file.
-4. Build bowtie2 index libraries for the filtered and unfiltered Databases
-5. Remove intermediate steps
-
-The command to run CRUX Part 2 is:
-
-  ```
-  sh crux_part2.sh -n metabarcode_target_name -f forward_primer_sequence -r reverse_primer_sequence -l shortest expected length of an amplicon -m longest expected length of an amplicon -d path_to_CRUX_db_folder -o path_to_output_folder -c clean up intermediate files "y/n" -h "cluster username"
-  ```
-
-The database files are found in:
-
+CRUX is run as follows:
 ```
-~/crux_release_V1_db/<metabarcode_target_name>/<metabarcode_target_name>_db_filtered_to_remove_ambigous_taxonomy
+sh ~/crux_db/crux.sh -h
+
+<<< CRUX: Sequence Creating Reference Libraries Using eXisting tools>>>
+
+The purpose of these script is to generate metabarcode locus specific reference libraries. This script takes PCR primer sets, runs ecoPRC (in silico PCR) on EMBL (or other OBITools formatted) databases, then BLASTs the resulting sequences ncbi's nr database, and generates database files for unique NCBI sequences. The final databases are either filtered (sequences with ambiguous taxonomy removed) of unfiltered and consist of a fasta file, a taxonomy file, and a Bowtie2 Index library.
+	For successful implementation
+		1. Make sure you have all of the dependencies and correct paths in the crux_config.sh file
+		2. All parameters can be modified using the arguments below.  Alternatively, all parameters can be altered in the crux_vars.sh folder
+
+Arguments:
+- Required:
+	-n	Metabarcode locus primer set name
+	-f	Metabarcode locus forward primer sequence  
+	-r	Metabarcode locus reverse primer sequence  
+	-s	Shortest amplicon expected (e.g. 100 bp shorter than the average amplicon length
+	-m	Longest amplicon expected (e.g. 100 bp longer than the average amplicon length
+	-o	path to output directory
+	-d	path to crux_db
+
+- Optional:
+	-x	If retaining intermediate files: -x (no argument needed; Default is to delete intermediate files)
+	-u	If running on an HPC (e.g. UCLA's Hoffman2 cluster), this is your username: e.g. eecurd
+	-l	If running locally: -l  (no argument needed)
+	-k	Chunk size for breaking up blast seeds (default 500)
+	-e	Maximum number of mismatch between primers and EMBL database sequences (default 3)
+	-g	Maximum number of allowed errors for filtering and trimming the BLAST seed sequences with cutadapt (default 0.3)
+	-t	The number of threads to launch for the first round of BLAST (default 10)
+	-v	The minimum accepted value for BLAST hits in the first round of BLAST (default 0.00001)
+	-i 	The minimum percent ID for BLAST hits in the first round of BLAST (default 50)
+	-c	Minimum percent of length of a query that a BLAST hit must cover (default 100)
+	-a	Maximum number of BLAST hits to return for each query (default 10000)
+	-z	BLAST gap opening penalty
+	-y	BLAST gap extension penalty
+	-j	The number of threads to launch for the first round of BLAST (default 10)
+	-w	The minimum accepted value for BLAST hits in the first round of BLAST (default 0.00001)
+	-p 	The minimum percent ID for BLAST hits in the first round of BLAST (default 70)
+	-f	Minimum percent of length of a query that a BLAST hit must cover (default 70)
+	-b	HPC mode header template
+
+- Other:
+	-h	Shows program usage then quits
 ```
 
-and
 
-```
-~/crux_release_V1_db/<metabarcode_target_name>/<metabarcode_target_name>_db_unfiltered
-```
+* An example runningin local mode:
+
+  ```
+  sh ~/crux_db/scripts/crux_part1.sh -n CO1 -f GGWACWGGWTGAACWGTWTAYCCYCC  -r TANACYTCnGGRTGNCCRAARAAYCA -l 200 -m 650 -d ~/crux_db -o ~/crux_db/CO1 -c n -h eecurd
+  ```
 
 ## References:
 

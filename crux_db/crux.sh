@@ -208,6 +208,7 @@ echo " "
 echo " "
 echo "Part 1.2:"
 echo "Clean ${NAME} ecoPCR output for blasting"
+mkdir -p ${DB}/cutadapt_files
 mkdir -p ${ODIR}/${NAME}_ecoPCR/
 mkdir -p ${ODIR}/${NAME}_ecoPCR/clean_up
 mkdir -p ${ODIR}/${NAME}_ecoPCR/cleaned
