@@ -159,7 +159,7 @@ Transgenic               TGN - ??? map to SYN ???
 Unclassified             UNC - map to UNK
 Viral                    VRL - common
 ```               
-* For CALeDNA CRUX reference libraries we used FUN, INV, VRT, PLN, PRO, and OTHER (present in older releases e.g 133).
+* For CALeDNA CRUX reference libraries we used FUN, INV, VRT, PLN, PRO, and OTHER (present in older releases e.g ENA Release 133).
 * We found that the BLAST steps of CRUX pick up a wide diversity of reads and not all EMBL std nucleotide libraries are required to recover taxa. For example, we recovered he same number of mammal species when running CRUX using only the vrt EMBL libraries as when using both the vrt and mam EMBL libraries.
 
 * These are very large files, and it is less memory intensive to download them in small batches, and convert them into many small obitools/ecopcr readable databases.
