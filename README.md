@@ -93,8 +93,9 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
   mkdir ~/crux_release_V1_db/NCBI_blast_nt
   cd ~/crux_release_V1_db/NCBI_blast_nt
   wget ftp://ftp.ncbi.nlm.nih.gov/blast/db/nt*
-  tar -xvzf *.tar.gz
+  for file in nt*.tar.gz; do tar -zxf $file; done
   ```
+
 
 4. Database files for generating ecoPCR compatible OBItools libraries
   * __all libraries need to be in__
@@ -164,6 +165,15 @@ The down stream metabarcoding Anacapa pipeline (https://github.com/limey-bean/An
     ```
     obiconvert -t ~/crux_release_V1_db/TAXO --embl --ecopcrdb-output=~/crux_release_V1_db/Obitools_databases/OB_dat_EMBL_6167017_std_pro ~/EMBL_pro/\*.dat --skip-on-error
     ```
+
+    /u/project/rwayne/software/Crux/
+    In Crux, find...
+    Directories:   crux_release_V1_db  
+    Files: Crux_to_do_list.txt  Manual_addition_of_reads_to_CRUX.txt  README.md
+
+    /u/project/rwayne/software/Crux/crux_release_V1_db
+    Directories: accession2taxonomy  cutadapt_files  ecoPCR  ncbi-blast-2.6.0+  NCBI_blast_nt  Obitools_databases  scripts  TAXO
+
 
 ## Running CRUX
 ### CRUX was developed to run on an a computer cluster with an SGE scheduler
