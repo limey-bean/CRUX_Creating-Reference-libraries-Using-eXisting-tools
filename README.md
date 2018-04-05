@@ -318,11 +318,17 @@ Arguments:
 ```
 
 
-* An example runningin local mode:
+* An example running in local mode:
 
   ```
-  sh ~/crux_db/scripts/crux_part1.sh -n CO1 -f GGWACWGGWTGAACWGTWTAYCCYCC  -r TANACYTCnGGRTGNCCRAARAAYCA -l 200 -m 650 -d ~/crux_db -o ~/crux_db/CO1 -c n -h eecurd
+  sh ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 250 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -l
   ```
+* An example running in HPC mode:
+
+  ```
+  sh ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 250 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -u eecurd
+    ```
+
 
 ## References:
 
