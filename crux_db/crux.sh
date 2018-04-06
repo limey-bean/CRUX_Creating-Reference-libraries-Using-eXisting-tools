@@ -125,8 +125,6 @@ esac
 # THE GOAL: is to capture not only the sequences that were submitted with primers included in the read (ecoPCR gets these), but also those that do not include primer regions but are some % of the length of the expected amplion (BLAST fills in these holes), and generate reference libraries and taxonomy files compatible with qiime or kraken taxonomy pipelines.
 
 # Source the config and vars file so that we have programs and variables available to us
-source $DB/scripts/crux_vars.sh
-source $DB/scripts/crux_config.sh
 
 if [[ -z ${HEADER} ]];
 then
@@ -162,6 +160,8 @@ else
   exit
 fi
 
+source $DB/scripts/crux_vars.sh
+source $DB/scripts/crux_config.sh
 
 ${MODULE_SOURCE}
 ${QIIME}
@@ -313,12 +313,18 @@ else
     # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
        cp ${nam} ${nam1}_${i}
        rm ${nam}
+       echo ""
+       echo "Running BLAST1 on ${nam1}_${i}"
+       date
        printf "#!/bin/bash\n\n\n/bin/bash ${DB}/scripts/sub_blast1.sh -n ${NAME} -q ${nam1}_${i} -o ${ODIR} -k ${j} -l blast_ready_${i} -d ${DB} -v ${EVAL1:=$BLAST1_eVALUE} -t ${THREAD1:=$BLAST1_NUM_THREADS} -i ${ID1:=$BLAST1_PERC_IDENTITY} -c ${COV1:=$BLAST1_HSP_PERC} -a ${RETURN:=$BLAST1_NUM_ALIGNMENTS} -y ${GO:=$GAP_OPEN} -z ${GE:=$GAP_EXTEND}\n" > ${ODIR}/Run_info/blast_jobs/blast1_${j}_${i}.sh
        /bin/bash ${ODIR}/Run_info/blast_jobs/blast1_${j}_${i}.sh
+       echo "Running BLAST2 on ${nam1}_${i}"
+       date
        printf "#!/bin/bash\n\n\n/bin/bash ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${nam1}_${i} -o ${ODIR} -k ${j} -l blast_ready_${i} -d ${DB} -w ${EVAL2:=$BLAST2_eVALUE} -j ${THREAD2:=$BLAST2_NUM_THREADS} -p ${ID2:=$BLAST2_PERC_IDENTITY} -f ${COV2:=$BLAST2_HSP_PERC} -a ${RETURN:=$BLAST2_NUM_ALIGNMENTS} -y ${GO:=$GAP_OPEN} -z ${GE:=$GAP_EXTEND}\n" > ${ODIR}/Run_info/blast_jobs/blast2_${j}_${i}.sh
        /bin/bash ${ODIR}/Run_info/blast_jobs/blast2_${j}_${i}.sh
        ((i=i+1))
      done
+     date
    else
      echo " "
      echo "${str} did not pass the minimum criteria that passes ecoPCR reads to the next step."
@@ -328,17 +334,21 @@ else
 fi
 
 # need to check if the array is done before moving on to the next step
-
-filename="${ODIR}/${NAME}_BLAST/blast_complete_outfiles.txt"
-filelines=`cat $filename`
-echo Start
-for line in $filelines ; do
- while ! [ -f ${line} ];
- do
-  echo "files not ready"
-  sleep 600
+if [ "${LOCALMODE}" = "FALSE" ];
+then
+ filename="${ODIR}/${NAME}_BLAST/blast_complete_outfiles.txt"
+ filelines=`cat $filename`
+ echo Start
+ for line in $filelines ; do
+  while ! [ -f ${line} ];
+  do
+   echo "files not ready"
+   sleep 600
+  done
  done
-done
+else
+  echo ""
+fi
 
 ###
 

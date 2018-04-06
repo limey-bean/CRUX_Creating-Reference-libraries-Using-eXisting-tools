@@ -76,4 +76,10 @@ python ${DB}/scripts/combine_and_dereplicate_fasta.py -o ${ODIR}/${NAME}_BLAST/$
 
 printf "${FILE}_blast_2.complete" > ${QU}_blast_2.complete
 rm ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/raw/${FILE}_blast2_out.txt
-rm ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}_blast2_out.fasta.tmp
+
+if [ -e "${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}_blast2_out.fasta.tmp" ];
+then
+  rm ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/fasta/${FILE}_blast2_out.fasta.tmp
+else
+  echo ""
+fi
