@@ -302,7 +302,7 @@ else
      mkdir -p ${ODIR}/${NAME}_BLAST/${j}_BLAST_out/raw
      mkdir -p ${ODIR}/${NAME}_BLAST/${j}_BLAST_out/fasta
      echo " "
-     echo "${str} has ecoPCR reads that passed the minimum criteria to move to the next step."
+     echo "${str} has ecoPCR reads that passed the minimum criteria."
      # split ecopcr output into files with 500 reads each
      split -l 1000 ${str} ${ODIR}/${NAME}_ecoPCR/cleaned/${j}/blast_ready_
       # do something as file has data
@@ -314,11 +314,11 @@ else
        cp ${nam} ${nam1}_${i}
        rm ${nam}
        echo ""
-       echo "Running BLAST1 on ${nam1}_${i}"
+       echo "Running BLAST1"
        date
        printf "#!/bin/bash\n\n\n/bin/bash ${DB}/scripts/sub_blast1.sh -n ${NAME} -q ${nam1}_${i} -o ${ODIR} -k ${j} -l blast_ready_${i} -d ${DB} -v ${EVAL1:=$BLAST1_eVALUE} -t ${THREAD1:=$BLAST1_NUM_THREADS} -i ${ID1:=$BLAST1_PERC_IDENTITY} -c ${COV1:=$BLAST1_HSP_PERC} -a ${RETURN:=$BLAST1_NUM_ALIGNMENTS} -y ${GO:=$GAP_OPEN} -z ${GE:=$GAP_EXTEND}\n" > ${ODIR}/Run_info/blast_jobs/blast1_${j}_${i}.sh
        /bin/bash ${ODIR}/Run_info/blast_jobs/blast1_${j}_${i}.sh
-       echo "Running BLAST2 on ${nam1}_${i}"
+       echo "Running BLAST2"
        date
        printf "#!/bin/bash\n\n\n/bin/bash ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${nam1}_${i} -o ${ODIR} -k ${j} -l blast_ready_${i} -d ${DB} -w ${EVAL2:=$BLAST2_eVALUE} -j ${THREAD2:=$BLAST2_NUM_THREADS} -p ${ID2:=$BLAST2_PERC_IDENTITY} -f ${COV2:=$BLAST2_HSP_PERC} -a ${RETURN:=$BLAST2_NUM_ALIGNMENTS} -y ${GO:=$GAP_OPEN} -z ${GE:=$GAP_EXTEND}\n" > ${ODIR}/Run_info/blast_jobs/blast2_${j}_${i}.sh
        /bin/bash ${ODIR}/Run_info/blast_jobs/blast2_${j}_${i}.sh
