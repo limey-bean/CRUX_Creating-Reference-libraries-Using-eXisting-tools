@@ -1,3 +1,7 @@
+<p align="center">
+<img src="Anacapa_logo.png" height="250" width="500">
+</p>
+
 # CRUX: Creating Reference libraries Using eXisting tools
 
 ### CRUX		last updated 1-10-2018
