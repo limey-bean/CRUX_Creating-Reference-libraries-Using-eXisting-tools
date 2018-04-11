@@ -4,8 +4,8 @@
 
 # CRUX: Creating Reference libraries Using eXisting tools
 
-### CRUX		last updated 1-10-2018
-#### Written by Emily Curd (eecurd@g.ucla.edu), Gaurav Kandlikar (gkandlikar@ucla.edu), and Jesse Gomer (jessegomer@gmail.com)
+### CRUX		last updated 4-11-2018
+#### Written by Emily Curd (eecurd@g.ucla.edu), Gaurav Kandlikar (gkandlikar@ucla.edu), and Jesse Gomer (jessegomer@gmail.com). Assistance was provided by Max Ogden (max@maxogden.com), and Rachel Meyer (rsmeyer@ucla.edu).
 #### Developed at UCLA for the University of California Conservation Consortium's CALeDNA Program
 
 ## Introduction
@@ -325,12 +325,12 @@ Arguments:
 * An example running in local mode:
 
   ```
-  sh ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 250 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -l
+  sh ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 280 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -l
   ```
 * An example running in HPC mode:
 
   ```
-  sh ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 250 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -u eecurd
+  sh ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 280 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -u eecurd
     ```
 
 
