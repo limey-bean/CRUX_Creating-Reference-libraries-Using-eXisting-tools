@@ -22,7 +22,7 @@ The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Ana
 
 ## Overview
 <p align="center">
-<img src="Crux_flow.png" height="500" width="300">
+<img src="Crux_flow.png" height="500" width="400">
 </p>
 
 ## Before CRUX is operable, you will need to download, install and/or build several programs and databases.
