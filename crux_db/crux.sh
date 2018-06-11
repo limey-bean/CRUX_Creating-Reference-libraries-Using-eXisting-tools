@@ -166,6 +166,8 @@ source $DB/scripts/crux_config.sh
 ${MODULE_SOURCE}
 ${QIIME}
 ${BOWTIE2}
+${ATS} #load ATS, Hoffman2 specific module for managing submitted jobs.
+
 
 echo " "
 mkdir -p ${ODIR}/Run_info/blast_jobs
