@@ -15,7 +15,7 @@ MODULE_SOURCE="source /u/local/Modules/default/init/bash" 	#if none, leave empty
 CUTADAPT="/u/local/apps/python/2.7.13/bin/cutadapt" 		#path to cutadapt binary. see documentation for how to obtain this script
 
 #load fastx_toolkit
-FASTX_TOOLKIT="module load fastx_toolkit"				#or what ever code is used to load fastx_toolkit in a bash shell, or path to fastx_toolkit 
+FASTX_TOOLKIT="module load fastx_toolkit"				#or what ever code is used to load fastx_toolkit in a bash shell, or path to fastx_toolkit
 
 #entrez-qiime
 ENTREZ_QIIME="${DB}/scripts/entrez_qiime.py" 						#path to python script. see documentation for how to obtain this script
@@ -32,7 +32,10 @@ BLASTn_CMD="${DB}/ncbi-blast-2.6.0+/bin/blastn" 			#either the path to the blast
 QIIME="module load qiime" 								#or what ever code is used to load qiime in a bash shell (e.g. on a mac it might be "macqiime")
 
 #load bowtie2
-BOWTIE2="module load bowtie2"							#or what ever code is used to load bowtie2 in a bash shell, or path to bowtie2 
+BOWTIE2="module load bowtie2"							#or what ever code is used to load bowtie2 in a bash shell, or path to bowtie2
+
+#load ATS
+ATS="module load ATS"									#or what ever code is used to load ATS in a bash shell, or path to ATS.  ATS is a Hoffman2 module that allows the user to submit a job on the HPC from within a shell script
 
 
 ###########################
@@ -50,5 +53,3 @@ A2T="${DB}/accession2taxonomy/nucl_gb.accession2taxid" 		#see documentation for 
 
 #BLAST db folder.  Should contain many files like the following: nt.00.nhr, nt.00.nin, nt.00.nnd, nt.00.nni, nt.00.nsq, nt.01.nhr, nt.01.nin, nt.01.nnd, nt.01.nni, nt.01.nsq, nt.01.nhr, nt.02.nin,......,......,nt.nal
 BLAST_DB="${DB}/NCBI_blast_nt/nt"							#see documentation for how to obtain this director
-
-
