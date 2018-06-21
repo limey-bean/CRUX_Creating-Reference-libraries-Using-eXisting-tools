@@ -215,8 +215,8 @@ mkdir -p ${ODIR}/${NAME}_ecoPCR/
 mkdir -p ${ODIR}/${NAME}_ecoPCR/clean_up
 mkdir -p ${ODIR}/${NAME}_ecoPCR/cleaned
 # make primer files for cutadapt step
-printf ">${NAME}_F\n${FP}\n>${NAME}_R\n${RP}" > "${DB}/cutadapt_files/${NAME}.fasta"
-python ${DB}/scripts/crux_format_primers_cutadapt.py ${DB}/cutadapt_files/${NAME}.fasta ${DB}/cutadapt_files/g_${NAME}.fasta ${DB}/cutadapt_files/a_${NAME}.fasta
+printf ">${NAME}_F\n${FP}\n>${NAME}_R\n${RP}" > "${ODIR}/cutadapt_files/${NAME}.fasta"
+python ${DB}/scripts/crux_format_primers_cutadapt.py ${ODIR}/cutadapt_files/${NAME}.fasta ${ODIR}/cutadapt_files/g_${NAME}.fasta ${ODIR}/cutadapt_files/a_${NAME}.fasta
 #run ecoPCR through cutadapt to verify that the primer seqeunce exists, and to trim it off
 for str in ${ODIR}/${NAME}_ecoPCR/raw_out/*_ecoPCR_out
 do
@@ -225,8 +225,8 @@ do
  #reformat ecoPCR out and remove duplicate reads by taxid
  tail -n +14 ${str} |cut -d "|" -f 3,21|sed "s/ | /,/g"|awk -F"," '!_[$1]++' | sed "s/\s//g" |awk 'BEGIN { FS=","; } {print ">"$1"\n"$2}' > ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_ecoPCR_blast_input.fasta
  #run cut adapt
- ${CUTADAPT} -e ${CDERROR:=$CUTADAPT_ERROR} -a file:${DB}/cutadapt_files/a_${NAME}.fasta  --untrimmed-output ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_untrimmed_1.fasta -o ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_clean.fasta ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_ecoPCR_blast_input.fasta >> ${ODIR}/Run_info/cut_adapt_out/${j}_cutadapt-report.txt
- ${CUTADAPT} -e ${CDERROR:=$CUTADAPT_ERROR} -g file:${DB}/cutadapt_files/g_${NAME}.fasta  --untrimmed-output ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_untrimmed_2.fasta -o ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_and_g_clean.fasta ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_clean.fasta >> ${ODIR}/Run_info/cut_adapt_out/${j}_cutadapt-report.txt
+ ${CUTADAPT} -e ${CDERROR:=$CUTADAPT_ERROR} -a file:${ODIR}/cutadapt_files/a_${NAME}.fasta  --untrimmed-output ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_untrimmed_1.fasta -o ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_clean.fasta ${ODIR}/${NAME}_ecoPCR/clean_up/${j}_ecoPCR_blast_input.fasta >> ${ODIR}/Run_info/cut_adapt_out/${j}_cutadapt-report.txt
+ ${CUTADAPT} -e ${CDERROR:=$CUTADAPT_ERROR} -g file:${ODIR}/cutadapt_files/g_${NAME}.fasta  --untrimmed-output ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_untrimmed_2.fasta -o ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_and_g_clean.fasta ${ODIR}/${NAME}_ecoPCR/cleaned/${j}_ecoPCR_blast_input_a_clean.fasta >> ${ODIR}/Run_info/cut_adapt_out/${j}_cutadapt-report.txt
  echo "..."${j}" is clean"
 date
 done
