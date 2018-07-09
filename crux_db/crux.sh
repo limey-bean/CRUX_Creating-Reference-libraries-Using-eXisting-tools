@@ -385,7 +385,7 @@ rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/*_blast_out.fasta
 
 ### add taxonomy using entrez_qiime.py
 echo "...Running ${j} entrez-qiime and cleaning up fasta and taxonomy files"
-python ${ENTREZ_QIIME} -i ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta -o ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy -n ${TAXO} -a ${A2T} -r phylum,class,order,family,genus,species
+python ${ENTREZ_QIIME} -i ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta -o ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy -n ${TAXO} -a ${A2T} -r superkingdom,phylum,class,order,family,genus,species
 # clean up reads based on low resolution taxonomy and store filtered reads in filtered file
 python ${DB}/scripts/clean_blast.py ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta ${ODIR}/${NAME}_db_filtered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt ${ODIR}/${NAME}_db_filtered/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt
 python ${DB}/scripts/tax_fix.py ${ODIR}/${NAME}_db_filtered/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt ${ODIR}/${NAME}_db_filtered/${NAME}_fasta_and_taxonomy/${NAME}_taxonomy.txt.tmp
