@@ -1,50 +1,105 @@
-How to Manually add reads to CRUX databases
-Written By Emily Curd
-Updated January 11, 2018 
+################################################
+# Manually building a CRUX compatible reference library or adding reads to a preexisting library.
+# Written By Emily Curd
+# Updated July 27, 2018
+################################################
 
+----------------------------
+All Crux libraries require a specific directory structure:
+  * Make the following directories and subdirectories
+      -> metabarcode
+      -> -> metabarcode_bowtie2_database
+      -> -> metabarcode_fasta_and_taxonomy
+    e.g
+      -> 16S
+      -> -> 16S_bowtie2_database
+      -> -> 16S_fasta_and_taxonomy
 
-A bash script will follow in a few days / weeks, but in the mean time here is how you do it on your own.
-
-You will need:
-1. A fasta file containing your reads.  I am not sure that it matters if they contain primers, or extend beyond the region of the metabarcode. I suspect that it does not matter, but if you test this please let me know what you find.  It will matter if they are shorter in length than the metabarcode minus the primers. If there is a read that is very similar to your custom read but is longer and has a better alignment score in muscle, you will get the hit from the close relative rather than the hit from your custom read.
-
-The file format is as follow:
-
->name_of_your_read_1
-aatgcgatcgatcgatcagatacgactacgactacgtagcatagatcagat
->name_of_your_read_2
-tacgactacgtagcatagatcagataatgcgatcgatcgatcagatacgac
-
-
-2. A text file for your reads. You will need fields for 7 levels of taxonomy: superkingdom,phylum,class,order,family,genus,species.  The format is as follows:
-
-name_of_your_read_1      Eukaryota;Chordata;Aves;Apodiformes;Apodidae;Apus;Apus apus
-name_of_your_read_2      Eukaryota;Chordata;Mammalia;NA;Bovidae;Bison;Bison bison
-
-
-3. a CRUX database <metabarcode>_.fasta file (filtered or unfiltered is up to you)
-
-4. a CRUX database <metabarcode>_taxonomy.txt file that matches the fasta file
-
-5. Access to bowtie2
-
-
-This is what you need to do in bash (replace <metabarcode> with the name of your metabarcode (e.g. CO1)) :
-
+To make the directories and subdirectories run the following:
 mkdir -p path_to_directory_where_you_want_your_new_Crux_library/<metabarcode>
 mkdir -p path_to_directory_where_you_want_your_new_Crux_library/<metabarcode>/<metabarcode>_bowtie2_database
 mkdir -p path_to_directory_where_you_want_your_new_Crux_library/<metabarcode>/<metabarcode>_fasta_and_taxonomy
+----------------------------
 
-1. cat path/to/your/custom_reads.fasta path/to/your/old/crux/db/<metabarcode>_.fasta >> path_to_directory_where_you_want_your_new_Crux_library/<metabarcode>/<metabarcode>_fasta_and_taxonomy/<metabarcode>_.fasta
+##########################################
+# To manually build a CRUX compatible reference library
+################################################
+----------------------------
+* If you have a fasta formatted file with NCBI version accession numbers
+    e.g. >LC056757.1
+         GAAAAGAAACTAACAAGGATTCCCCTAGTAACTGCGAGTGAAGCGGGAAAAGCTCAAATTTAAAATCTGGCAGTGGTTCA
 
-2. cat path/to/your/custom_taxonomy.txt path/to/your/old/crux/db/<metabarcode>_taxonomy.txt >> path_to_directory_where_you_want_your_new_Crux_library/<metabarcode>/<metabarcode>_fasta_and_taxonomy/<metabarcode>_taxonomy.txt
+1. Add your fasta file to the <metabarcode>_fasta_and_taxonomy subdirectory
+2. Rename the fasta file to the following <metabarcode>_.fasta
+3. Run entrez_qiime.py to build the taxonomy list. https://github.com/bakerccm/entrez_qiime
+   The command is as follows:
+   python <path_to>/entrez_qiime.py -i <path_to>/<metabarcode>/<metabarcode>_fasta_taxonomy/<metabarcode>_example_.fasta -o <path_to>/<metabarcode>/<metabarcode>_fasta_taxonomy/<metabarcode>_taxonomy -n <path_to_ncbi_Taxo_dump_directory>/TAXO -r <path_to_ncbi_accession2taxonomy_directory>/accession2taxonomy/nucl_gb.accession2taxid -r superkingdom,phylum,class,order,family,genus,species
+4. Build a bowtie2 compatible index file for the the <metabarcode>_.fasta file
+   The command is as follows:
+   bowtie2-build -f <metabarcode>_.fasta <path_to>/<metabarcode>/<metabarcode>_bowtie2_database/<metabarcode>bowtie2_index
+5. Now the database is ready to run in  Anacapa
 
-3. bowtie2-build -f path_to_directory_where_you_want_your_new_Crux_library/<metabarcode>/<metabarcode>_fasta_and_taxonomy/<metabarcode>_.fasta path_to_directory_where_you_want_your_new_Crux_library/<metabarcode>/<metabarcode>_bowtie2_database/<metabarcode>_bowtie2_index
+----------------------------
+* If you have a fasta file but no NCBI version accession numbers
 
-* if on hoffman2 run ```module load bowtie2``` first then run the command above
-* if on merced add the full path to bowtie2-build ```/opt/anaconda3/bin/bowtie2-build```
+e.g. >my_read_1
+     GAAAAGAAACTAACAAGGATTCCCCTAGTAACTGCGAGTGAAGCGGGAAAAGCTCAAATTTAAAATCTGGCAGTGGTTCA
 
-Now you are good to go, just add it to your anacapa database folder and see what happens.
+1. Add your fasta file to the <metabarcode>_fasta_and_taxonomy subdirectory
+2. Rename the fasta file to the following <metabarcode>_.fasta
+3. Manually generate a taxonomy table with the following name: <metabarcode>_taxonomy.
+   The file structure needs to include:
+   name of the read superkingdom;phylum;class;order;family;genus;species
+   e.g.
+      NR_117000.1	Bacteria;Proteobacteria;Gammaproteobacteria;Enterobacterales;Erwiniaceae;Erwinia;Erwinia aphidicola
+      NR_122095.1	Bacteria;Proteobacteria;Betaproteobacteria;Nitrosomonadales;Methylophilaceae;Methylophilus;Methylophilus glucosoxydans
+      NR_115689.1	Bacteria;Proteobacteria;Gammaproteobacteria;Chromatiales;Chromatiaceae;Arsukibacterium;Arsukibacterium ikkense
+4. Build a bowtie2 compatible index file for the the <metabarcode>_.fasta file
+The command is as follows:
+bowtie2-build -f <metabarcode>_.fasta <path_to>/<metabarcode>/<metabarcode>_bowtie2_database/<metabarcode>bowtie2_index
+5. Now the database is ready to run in  Anacapa
 
+################################################
+# To add sequences to a current CRUX reference library
+################################################
+----------------------------
+  * If you have a fasta formatted file with NCBI version accession numbers and a preexisting CRUX reference database
+      e.g. >LC056757.1
+           GAAAAGAAACTAACAAGGATTCCCCTAGTAACTGCGAGTGAAGCGGGAAAAGCTCAAATTTAAAATCTGGCAGTGGTTCA
+  1. You can either start a new CRUX database by making new directories with unique names, or delete the contents of all subdirectories with the exception of the <metabarcode>_.fasta file
+  2. Concatenate your fasta file with the existing <metabarcode>_.fasta file in the <metabarcode>_fasta_and_taxonomy subdirectory
+        You can do this by running the following command:
+          cat <path_to_the_original_file>/<metabarcode>_.fasta <path_to_your_file>/myfile.fasta > <path_to_the_original_file>/<metabarcode>_.fasta
+  3. Make sure the fasta file has the final naming convention <metabarcode>_.fasta
+  4. Run entrez_qiime.py to build the taxonomy list from the file just created. https://github.com/bakerccm/entrez_qiime
+     The command is as follows:
+     python <path_to>/entrez_qiime.py -i <path_to>/<metabarcode>/<metabarcode>_fasta_taxonomy/<metabarcode>_example_.fasta -o <path_to>/<metabarcode>/<metabarcode>_fasta_taxonomy/<metabarcode>_taxonomy -n <path_to_ncbi_Taxo_dump_directory>/TAXO -r <path_to_ncbi_accession2taxonomy_directory>/accession2taxonomy/nucl_gb.accession2taxid -r superkingdom,phylum,class,order,family,genus,species
+  5. Build a bowtie2 compatible index file for the the <metabarcode>_.fasta file
+     The command is as follows:
+     bowtie2-build -f <metabarcode>_.fasta <path_to>/<metabarcode>/<metabarcode>_bowtie2_database/<metabarcode>bowtie2_index
+  6. Now the database is ready to run in  Anacapa
 
+----------------------------
+  * If you have a fasta file but no NCBI version accession numbers and a preexisting CRUX reference database
+    e.g. >my_read_1
+       GAAAAGAAACTAACAAGGATTCCCCTAGTAACTGCGAGTGAAGCGGGAAAAGCTCAAATTTAAAATCTGGCAGTGGTTCA
 
+  1. You can either start a new CRUX database by making new directories with unique names, or delete the contents of all subdirectories with the exception of the <metabarcode>_.fasta file and the <metabarcode>_taxonomy.txt file
+  2. Concatenate your fasta file with the existing <metabarcode>_.fasta file in the <metabarcode>_fasta_and_taxonomy subdirectory
+        You can do this by running the following command:
+          cat <path_to_the_original_file>/<metabarcode>_.fasta <path_to_your_file>/myfile.fasta > <path_to_the_original_file>/<metabarcode>_.fasta
+  3. Make sure the fasta file has the final naming convention <metabarcode>_.fasta
+  4. Manually generate a taxonomy table with the following name: <metabarcode>_taxonomy.
+     The file structure needs to include:
+     name of the read superkingdom;phylum;class;order;family;genus;species
+     e.g.
+        NR_117000.1	Bacteria;Proteobacteria;Gammaproteobacteria;Enterobacterales;Erwiniaceae;Erwinia;Erwinia aphidicola
+        NR_122095.1	Bacteria;Proteobacteria;Betaproteobacteria;Nitrosomonadales;Methylophilaceae;Methylophilus;Methylophilus glucosoxydans
+        NR_115689.1	Bacteria;Proteobacteria;Gammaproteobacteria;Chromatiales;Chromatiaceae;Arsukibacterium;Arsukibacterium ikkense
+  5.  Concatenate your taxonomy file with the existing <metabarcode>_taxonomy.txt file in the <metabarcode>_fasta_and_taxonomy subdirectory
+        You can do this by running the following command:
+          cat <path_to_the_original_file>/<metabarcode>_taxonomy.txt <path_to_your_file>/myfile_taxonomy.txt > <path_to_the_original_file>/<metabarcode>_taxonomy.txt
+  6. Build a bowtie2 compatible index file for the the <metabarcode>_.fasta file
+  The command is as follows:
+  bowtie2-build -f <metabarcode>_.fasta <path_to>/<metabarcode>/<metabarcode>_bowtie2_database/<metabarcode>bowtie2_index
+  7. Now the database is ready to run in  Anacapa
