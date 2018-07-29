@@ -22,7 +22,7 @@ ID2=""
 COV2=""
 
 
-while getopts "n:q:o:k:l:d:t:v:i:c:a:j:w:p:f:b:z:y:" opt; do
+while getopts "n:q:o:k:l:d:t:v:i:c:a:j:w:p:x:b:z:y:" opt; do
     case $opt in
     	n) NAME="$OPTARG"
     	;;
@@ -52,7 +52,7 @@ while getopts "n:q:o:k:l:d:t:v:i:c:a:j:w:p:f:b:z:y:" opt; do
         ;;
         p) ID2="$OPTARG"
         ;;
-        f) COV2="$OPTARG"
+        x) COV2="$OPTARG"
         ;;
         y) GO="$OPTARG"
         ;;
@@ -66,7 +66,7 @@ source ${DB}/scripts/crux_config.sh
 
 #submit blast job for a given fasta file
 
-${BLASTn_CMD} -query ${QU} -out ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/raw/${FILE}_blast2_out.txt -db ${BLAST_DB} -evalue ${EVAL2} -outfmt "6 saccver staxid sseq" -num_threads ${THREAD2} -perc_identity ${ID2} -qcov_hsp_perc ${COV2} -num_alignments ${RETURN} -gapopen ${GO} -gapextend ${GE}
+${BLASTn_CMD} -query ${QU} -out ${ODIR}/${NAME}_BLAST/${TYPE}_BLAST_out/raw/${FILE}_blast2_out.txt -db ${BLAST_DB} -evalue ${EVAL2:=$BLAST2_eVALUE} -outfmt "6 saccver staxid sseq" -num_threads ${THREAD2:=$BLAST2_NUM_THREADS} -perc_identity  ${ID2:=$BLAST2_PERC_IDENTITY} -qcov_hsp_perc ${COV2:=$BLAST2_HSP_PERC} -num_alignments ${RETURN:=$BLAST2_NUM_ALIGNMENTS} -gapopen ${GO:=$GAP_OPEN} -gapextend ${GE:=$GAP_EXTEND}
 
 # remove duplicate version accession numbers and convert to fasta file
 

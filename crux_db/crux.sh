@@ -32,7 +32,7 @@ COV2=""
 HEADER=""
 HELP=""
 
-while getopts "n:f:r:s:m:o:d:x?:u:l?:k:e:g:t:v:i:c:a:z:y:j:w:p:f:b:h?:" opt; do
+while getopts "n:f:r:s:m:o:d:q?:u:l?:k:e:g:t:v:i:c:a:z:y:j:w:p:x:b:h?:" opt; do
     case $opt in
         n) NAME="$OPTARG"
         ;;
@@ -48,7 +48,7 @@ while getopts "n:f:r:s:m:o:d:x?:u:l?:k:e:g:t:v:i:c:a:z:y:j:w:p:f:b:h?:" opt; do
         ;;
         d) DB="$OPTARG"
         ;;
-        x) CLEAN="FLASE"
+        q) CLEAN="FLASE"
         ;;
         u) UN="$OPTARG"
         ;;
@@ -68,7 +68,7 @@ while getopts "n:f:r:s:m:o:d:x?:u:l?:k:e:g:t:v:i:c:a:z:y:j:w:p:f:b:h?:" opt; do
         ;;
         c) COV1="$OPTARG"
         ;;
-        a) RETURN1="$OPTARG"
+        a) RETURN="$OPTARG"
         ;;
         z) GO="$OPTARG"
         ;;
@@ -80,7 +80,7 @@ while getopts "n:f:r:s:m:o:d:x?:u:l?:k:e:g:t:v:i:c:a:z:y:j:w:p:f:b:h?:" opt; do
         ;;
         p) ID2="$OPTARG"
         ;;
-        f) COV2="$OPTARG"
+        x) COV2="$OPTARG"
         ;;
         b) HEADER="$OPTARG"
         ;;
@@ -91,7 +91,7 @@ done
 
 if [ "${HELP}" = "TRUE" ]
 then
-  printf "<<< CRUX: Sequence Creating Reference Libraries Using eXisting tools>>>\n\nThe purpose of these script is to generate metabarcode locus specific reference libraries. This script takes PCR primer sets, runs ecoPRC (in silico PCR) on EMBL (or other OBITools formatted) databases, then BLASTs the resulting sequences ncbi's nr database, and generates database files for unique NCBI sequences. The final databases are either filtered (sequences with ambiguous taxonomy removed) of unfiltered and consist of a fasta file, a taxonomy file, and a Bowtie2 Index library. \n	For successful implementation \n		1. Make sure you have all of the dependencies and correct paths in the crux_config.sh file\n		2. All parameters can be modified using the arguments below.  Alternatively, all parameters can be altered in the crux_vars.sh folder\n\nArguments:\n- Required:\n	-n	Metabarcode locus primer set name\n	-f	Metabarcode locus forward primer sequence  \n	-r	Metabarcode locus reverse primer sequence  \n	-s	Shortest amplicon expected (e.g. 100 bp shorter than the average amplicon length\n	-m	Longest amplicon expected (e.g. 100 bp longer than the average amplicon length\n	-o	path to output directory\n	-d	path to crux_db\n\n- Optional:\n	-x	If retaining intermediate files: -x (no argument needed; Default is to delete intermediate files) \n	-u	If running on an HPC (e.g. UCLA's Hoffman2 cluster), this is your username: e.g. eecurd\n	-l	If running locally: -l  (no argument needed)\n	-k	Chunk size for breaking up blast seeds (default 500)\n	-e	Maximum number of mismatch between primers and EMBL database sequences (default 3)\n	-g	Maximum number of allowed errors for filtering and trimming the BLAST seed sequences with cutadapt (default 0.3)\n	-t	The number of threads to launch for the first round of BLAST (default 10)\n	-v	The minimum accepted value for BLAST hits in the first round of BLAST (default 0.00001)\n	-i 	The minimum percent ID for BLAST hits in the first round of BLAST (default 50)\n	-c	Minimum percent of length of a query that a BLAST hit must cover (default 100)\n	-a	Maximum number of BLAST hits to return for each query (default 10000)\n	-z	BLAST gap opening penalty\n	-y	BLAST gap extension penalty\n	-j	The number of threads to launch for the first round of BLAST (default 10)\n	-w	The minimum accepted value for BLAST hits in the first round of BLAST (default 0.00001)\n	-p 	The minimum percent ID for BLAST hits in the first round of BLAST (default 70)\n	-f	Minimum percent of length of a query that a BLAST hit must cover (default 70)\n	-b	HPC mode header template\n\n- Other:\n	-h	Shows program usage then quits\n\n\n"
+  printf "<<< CRUX: Sequence Creating Reference Libraries Using eXisting tools>>>\n\nThe purpose of these script is to generate metabarcode locus specific reference libraries. This script takes PCR primer sets, runs ecoPRC (in silico PCR) on EMBL (or other OBITools formatted) databases, then BLASTs the resulting sequences ncbi's nr database, and generates database files for unique NCBI sequences. The final databases are either filtered (sequences with ambiguous taxonomy removed) of unfiltered and consist of a fasta file, a taxonomy file, and a Bowtie2 Index library. \n	For successful implementation \n		1. Make sure you have all of the dependencies and correct paths in the crux_config.sh file\n		2. All parameters can be modified using the arguments below.  Alternatively, all parameters can be altered in the crux_vars.sh folder\n\nArguments:\n- Required:\n	-n	Metabarcode locus primer set name\n	-f	Metabarcode locus forward primer sequence  \n	-r	Metabarcode locus reverse primer sequence  \n	-s	Shortest amplicon expected (e.g. 100 bp shorter than the average amplicon length\n	-m	Longest amplicon expected (e.g. 100 bp longer than the average amplicon length\n	-o	path to output directory\n	-d	path to crux_db\n\n- Optional:\n	-q	If retaining intermediate files: -x (no argument needed; Default is to delete intermediate files) \n	-u	If running on an HPC (e.g. UCLA's Hoffman2 cluster), this is your username: e.g. eecurd\n	-l	If running locally: -l  (no argument needed)\n	-k	Chunk size for breaking up blast seeds (default 500)\n	-e	Maximum number of mismatch between primers and EMBL database sequences (default 3)\n	-g	Maximum number of allowed errors for filtering and trimming the BLAST seed sequences with cutadapt (default 0.3)\n	-t	The number of threads to launch for the first round of BLAST (default 10)\n	-v	The minimum accepted value for BLAST hits in the first round of BLAST (default 0.00001)\n	-i 	The minimum percent ID for BLAST hits in the first round of BLAST (default 50)\n	-c	Minimum percent of length of a query that a BLAST hit must cover (default 100)\n	-a	Maximum number of BLAST hits to return for each query (default 10000)\n	-z	BLAST gap opening penalty\n	-y	BLAST gap extension penalty\n	-j	The number of threads to launch for the first round of BLAST (default 10)\n	-w	The minimum accepted value for BLAST hits in the first round of BLAST (default 0.00001)\n	-p 	The minimum percent ID for BLAST hits in the first round of BLAST (default 70)\n	-x	Minimum percent of length of a query that a BLAST hit must cover (default 70)\n	-b	HPC mode header template\n\n- Other:\n	-h	Shows program usage then quits\n\n\n"
   exit
 else
   echo ""
@@ -280,9 +280,9 @@ then
     # submit blast jobs for each file, and then remove reads with duplicate accession version numbers
     array_var="\$SGE_TASK_ID"
     printf "${BLAST1_HEADER}\n#$ -t 1-${file_count}\n\n\n/bin/bash ${DB}/scripts/sub_blast1.sh -n ${NAME} -q ${nam1}_${array_var} -o ${ODIR} -k ${j} -l blast_ready_${array_var} -d ${DB} -v ${EVAL1:=$BLAST1_eVALUE} -t ${THREAD1:=$BLAST1_NUM_THREADS} -i ${ID1:=$BLAST1_PERC_IDENTITY} -c ${COV1:=$BLAST1_HSP_PERC} -a ${RETURN:=$BLAST1_NUM_ALIGNMENTS} -y ${GO:=$GAP_OPEN} -z ${GE:=$GAP_EXTEND}\n" > ${ODIR}/Run_info/blast_jobs/blast1_${j}.sh
-    qsub ${ODIR}/Run_info/blast_jobs/blast1_${j}.sh
-    printf "${BLAST2_HEADER}\n#$ -t 1-${file_count}\n\n\n/bin/bash ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${nam1}_${array_var} -o ${ODIR} -k ${j} -l blast_ready_${array_var} -d ${DB} -w ${EVAL2:=$BLAST2_eVALUE} -j ${THREAD2:=$BLAST2_NUM_THREADS} -p ${ID2:=$BLAST2_PERC_IDENTITY} -f ${COV2:=$BLAST2_HSP_PERC} -a ${RETURN:=$BLAST2_NUM_ALIGNMENTS} -y ${GO:=$GAP_OPEN} -z ${GE:=$GAP_EXTEND}\n" > ${ODIR}/Run_info/blast_jobs/blast2_${j}.sh
-    qsub ${ODIR}/Run_info/blast_jobs/blast2_${j}.sh
+    ${QUEUESUBMIT} ${ODIR}/Run_info/blast_jobs/blast1_${j}.sh
+    printf "${BLAST2_HEADER}\n#$ -t 1-${file_count}\n\n\n/bin/bash ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${nam1}_${array_var} -o ${ODIR} -k ${j} -l blast_ready_${array_var} -d ${DB} -w ${EVAL2:=$BLAST2_eVALUE} -j ${THREAD2:=$BLAST2_NUM_THREADS} -p ${ID2:=$BLAST2_PERC_IDENTITY} -x ${COV2:=$BLAST2_HSP_PERC} -a ${RETURN:=$BLAST2_NUM_ALIGNMENTS} -y ${GO:=$GAP_OPEN} -z ${GE:=$GAP_EXTEND}\n" > ${ODIR}/Run_info/blast_jobs/blast2_${j}.sh
+    ${QUEUESUBMIT} ${ODIR}/Run_info/blast_jobs/blast2_${j}.sh
   else
     echo " "
     echo "${str} did not pass the minimum criteria that passes ecoPCR reads to the next step."
@@ -322,7 +322,7 @@ else
        /bin/bash ${ODIR}/Run_info/blast_jobs/blast1_${j}_${i}.sh
        echo "Running BLAST2 on ${nam1}_${i}"
        date
-       printf "#!/bin/bash\n\n\n/bin/bash ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${nam1}_${i} -o ${ODIR} -k ${j} -l blast_ready_${i} -d ${DB} -w ${EVAL2:=$BLAST2_eVALUE} -j ${THREAD2:=$BLAST2_NUM_THREADS} -p ${ID2:=$BLAST2_PERC_IDENTITY} -f ${COV2:=$BLAST2_HSP_PERC} -a ${RETURN:=$BLAST2_NUM_ALIGNMENTS} -y ${GO:=$GAP_OPEN} -z ${GE:=$GAP_EXTEND}\n" > ${ODIR}/Run_info/blast_jobs/blast2_${j}_${i}.sh
+       printf "#!/bin/bash\n\n\n/bin/bash ${DB}/scripts/sub_blast2.sh -n ${NAME} -q ${nam1}_${i} -o ${ODIR} -k ${j} -l blast_ready_${i} -d ${DB} -w ${EVAL2:=$BLAST2_eVALUE} -j ${THREAD2:=$BLAST2_NUM_THREADS} -p ${ID2:=$BLAST2_PERC_IDENTITY} -x ${COV2:=$BLAST2_HSP_PERC} -a ${RETURN:=$BLAST2_NUM_ALIGNMENTS} -y ${GO:=$GAP_OPEN} -z ${GE:=$GAP_EXTEND}\n" > ${ODIR}/Run_info/blast_jobs/blast2_${j}_${i}.sh
        /bin/bash ${ODIR}/Run_info/blast_jobs/blast2_${j}_${i}.sh
        ((i=i+1))
      done
