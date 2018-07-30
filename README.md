@@ -87,6 +87,7 @@ The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Ana
 
 **__Databases to download__**
 ***__Any time you download a new blastn database, Download the newest TAXO dump and NCBI accession2taxonomy file!!!__***
+***__See the download.sh script to automate downloading databases.  Modify the EMBL and OBITools section to download and obiconvert more than fungi__***
 
 1. NCBI taxonomy dump:  
         ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
@@ -278,7 +279,7 @@ Step 2. Build the libraries
 
 CRUX is run as follows:
 ```
-sh ~/crux_db/crux.sh -h
+/bin/bash ~/crux_db/crux.sh -h
 
 <<< CRUX: Sequence Creating Reference Libraries Using eXisting tools>>>
 
@@ -325,12 +326,12 @@ Arguments:
 * An example running in local mode:
 
   ```
-  sh ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 280 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -l
+  /bin/bash ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 280 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -l
   ```
 * An example running in HPC mode:
 
   ```
-  sh ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 280 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -u eecurd
+  /bin/bash ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 280 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -u eecurd
     ```
 
 
