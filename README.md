@@ -6,7 +6,7 @@
 
 ### CRUX		last updated 4-11-2018
 #### Written by Emily Curd (eecurd@g.ucla.edu), Gaurav Kandlikar (gkandlikar@ucla.edu), and Jesse Gomer (jessegomer@gmail.com). Assistance was provided by Max Ogden (max@maxogden.com), and Rachel Meyer (rsmeyer@ucla.edu).
-#### Developed at UCLA for the University of California Conservation Consortium's CALeDNA Program
+#### Developed at UCLA for the University of California Conservation Genomics Consortium's CALeDNA Program
 
 ## Introduction
 
@@ -314,7 +314,7 @@ Arguments:
 	-j	The number of threads to launch for the first round of BLAST (default 10)
 	-w	The minimum accepted value for BLAST hits in the first round of BLAST (default 0.00001)
 	-p 	The minimum percent ID for BLAST hits in the first round of BLAST (default 70)
-	-f	Minimum percent of length of a query that a BLAST hit must cover (default 70)
+	-q	Minimum percent of length of a query that a BLAST hit must cover (default 70)
 	-b	HPC mode header template
 
 - Other:
