@@ -1,3 +1,5 @@
+#! /bin/bash
+
 # example script to download and data for crux
 # make a crux_db directory
 mkdir crux_db
