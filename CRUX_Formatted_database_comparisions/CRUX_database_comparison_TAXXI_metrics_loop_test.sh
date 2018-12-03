@@ -126,15 +126,15 @@ grep ':' ${namecountsdir}/${name}_namecount.txt > ${namecountsdir}/${name}_namec
 
 ################### run anacapa BLCA
 # prepare for anacapa BLCA by making a bowtie2 database
-#bowtie2-build -f ${traindir}/${name}_subject_gi.fasta ${bowtie2dir}/${name}_bowtie2_index
+bowtie2-build -f ${traindir}/${name}_subject_gi.fasta ${bowtie2dir}/${name}_bowtie2_index
 # need biopython -> might be a waste of effort but Qiime alone did not seem to be working
-#echo "global"
-#bowtie2 -x ${bowtie2dir}/${name}_bowtie2_index  -f -U ${traindir}/${name}_query_gi.fasta -S ${maindir}query_subject/${name}/${name}_query_end_to_end.sam --no-hd --no-sq --very-sensitive --end-to-end --no-unal -p 120 -k ${Best_hit:=50} --un ${maindir}query_subject/${name}/${name}_query_end_to_end_reject.fasta
+echo "global"
+bowtie2 -x ${bowtie2dir}/${name}_bowtie2_index  -f -U ${traindir}/${name}_query_gi.fasta -S ${maindir}query_subject/${name}/${name}_query_end_to_end.sam --no-hd --no-sq --very-sensitive --end-to-end --no-unal -p 120 -k ${Best_hit:=50} --un ${maindir}query_subject/${name}/${name}_query_end_to_end_reject.fasta
 #unmerged pair reads local
-#echo "local"
-#bowtie2 -x ${bowtie2dir}/${name}_bowtie2_index  -f -U ${maindir}query_subject/${name}/${name}_query_end_to_end_reject.fasta -S ${maindir}query_subject/${name}/${name}_query_local.sam --no-hd --no-sq --very-sensitive --local --no-unal -p 120 -k ${Best_hit:=50} --un ${maindir}query_subject/${name}/${name}_query_end_to_end_and_local_reject.fasta
+echo "local"
+bowtie2 -x ${bowtie2dir}/${name}_bowtie2_index  -f -U ${maindir}query_subject/${name}/${name}_query_end_to_end_reject.fasta -S ${maindir}query_subject/${name}/${name}_query_local.sam --no-hd --no-sq --very-sensitive --local --no-unal -p 120 -k ${Best_hit:=50} --un ${maindir}query_subject/${name}/${name}_query_end_to_end_and_local_reject.fasta
 ### concat all of the sam files for blca
-#cat ${maindir}query_subject/${name}/*.sam > ${maindir}query_subject/${name}/${name}_bowtie2_all.sam
+cat ${maindir}query_subject/${name}/*.sam > ${maindir}query_subject/${name}/${name}_bowtie2_all.sam
 
 
 if [ -z ${PARAMS} ]
