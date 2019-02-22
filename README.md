@@ -70,7 +70,8 @@ The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Ana
 
 4. BLAST+ (version 2.6.0):
          https://www.ncbi.nlm.nih.gov/books/NBK279690/
-	* the lastest BLAST executables can be downloaded from: ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.6.0/
+	* the BLAST executables can be downloaded from: ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.6.0/ncbi-blast-2.6.0+-x64-linux.tar.gz
+	* extract the tar.gz repository: tar xvzf ~/crux_db/ncbi-blast-2.6.0+-x64-linux.tar.gz
 	* If you are not modifying the crux_config.sh, then the path to the blastn executable should be as follows:
 
   ```
