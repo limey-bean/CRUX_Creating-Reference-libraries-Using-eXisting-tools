@@ -19,7 +19,7 @@ Because many sequencing records are deposited to Genbank (Benson et al., 2012) w
 
 A corresponding taxonomy identification file (superkingdom, phylum, class, order, family, genus, species) is generated from the fasta formatted blast output using **entrez-qiime** (https://github.com/bakerccm/entrez_qiime), the NCBI’s taxonomy dump and map of association between taxonomy and accession version numbers (ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/). Because NCBI taxonomy is not always complete (e.g. uncultured organisms, organisms with unknown taxonomy, etc.) CRUX generates two sets of reference files: filtered and unfiltered.  The filtered reference files exclude reads with the following in their taxonomic path: 'uncultured', 'environmental', 'sample', or 'NA;NA;NA;NA'.
 
-The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Anacapa)runs **Bowtie2** (Langmead et al., 2009) to assigns reads to these references databases and generate a corresponding taxonomy file. Thus the final step is to generate **Bowtie2** formatted data index libraries.
+The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Anacapa) runs **Bowtie2** (Langmead et al., 2009) to assigns reads to these references databases and generate a corresponding taxonomy file. Thus the final step is to generate **Bowtie2** formatted data index libraries.
 
 ## Overview
 <p align="center">
