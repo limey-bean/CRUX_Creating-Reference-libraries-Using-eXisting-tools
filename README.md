@@ -71,7 +71,7 @@ The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Ana
 4. BLAST+ (version 2.6.0):
          https://www.ncbi.nlm.nih.gov/books/NBK279690/
 	* the BLAST executables can be downloaded from: ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.6.0/ncbi-blast-2.6.0+-x64-linux.tar.gz
-	* extract the tar.gz repository: tar xvzf ~/crux_db/ncbi-blast-2.6.0+-x64-linux.tar.gz
+	* extract the tar.gz repository: `tar xvzf ~/crux_db/ncbi-blast-2.6.0+-x64-linux.tar.gz`
 	* If you are not modifying the crux_config.sh, then the path to the blastn executable should be as follows:
 
   ```
@@ -120,27 +120,19 @@ The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Ana
   for file in nt*.tar.gz; do tar -zxf $file; done
   ```
   * you should have a file structure as follows:
-    * /NCBI_blast_nt
-	     * ~/nt.00.nhr
-	     * ~/	nt.00.nin
-	     * ~/	nt.00.nnd
-	     * ~/	nt.00.nni
-	     * ~/...
-
+```
+    /NCBI_blast_nt
+	~/nt.00.nhr
+	~/.00.nin
+	~/.00.nnd
+	~/.00.nni
+	~/...
+```
 
 4. Database files for generating ecoPCR compatible OBItools libraries
-  * __all libraries need to be in__
-  ```
-  ~/crux_db/Obitools_databases
-  ```
-  __folder and have__
-
-  ```
-  OB_dat_
-  ```
-  __as a folder and file prefix__
+  * __all libraries need to be in__  `~/crux_db/Obitools_databases` __directory and have__ `OB_dat_` __as a folder and file prefix__
   * If the names are not correct the run will fail.
-  * see Obitools documentation for range of file types that can be converted into ecoPCR searchable libraries
+  * see [Obitools documentation](https://pythonhosted.org/OBITools/) for range of file types that can be converted into ecoPCR searchable libraries
 
 __The following is an example using EMBL std nucleotide database files. This is only one of may ways to build an Obitools database. The CALeDNA CRUX libraries were generated using OBITools databases generated using EMBL std nucleotide database files.__
 
@@ -171,14 +163,16 @@ Viral                    VRL - common
 
 * These are very large files, and it is less memory intensive to download them in small batches, and convert them into many small obitools/ecopcr readable databases.
 
-* In a temporary folder download a single EMBL std nucleotide library
+* In a temporary folder, download a single EMBL std nucleotide library;
     ```
     wget ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_fun
     ```
 
     etc... The libraries will resemble the following:
-    * rel_std_fun_01_r133.dat.gz  
-    * rel_std_fun_02_r133.dat.gz
+    ```
+    rel_std_fun_01_r133.dat.gz  
+    rel_std_fun_02_r133.dat.gz
+    ```
 
     Unzip the files
     ```
@@ -186,15 +180,18 @@ Viral                    VRL - common
     ```
 
 Step 2. Build the libraries
-* The user will need to make the ~/Obitools_databases and subdirectories that reflect the the EMBL std nucleotide databases chosen for building CRUX reference libraries.
+* The user will need to make  `~/Obitools_databases` and subdirectories that reflect the EMBL std nucleotide databases chosen for building CRUX reference libraries.
   * The directory structure will resemble the following:
-      * ~/Obitools_databases
-    	 * ~/OB_dat_EMBL_1108017_std_inv    
-    	 * ~/OB_dat_EMBL_1108017_std_pln
-    	 * ~/OB_dat_EMBL_1108017_std_fun
-    	 * ~/OB_dat_EMBL_1108017_std_other
-    	 * ~/OB_dat_EMBL_1108017_std_pro  
-    	 * ~/OB_dat_EMBL_1108017_std_vrt
+
+```
+      ~/Obitools_databases
+    	 ~/OB_dat_EMBL_1108017_std_inv    
+    	 ~/OB_dat_EMBL_1108017_std_pln
+    	 ~/OB_dat_EMBL_1108017_std_fun
+    	 ~/OB_dat_EMBL_1108017_std_other
+    	 ~/OB_dat_EMBL_1108017_std_pro  
+    	 ~/OB_dat_EMBL_1108017_std_vrt
+```
 
       __The subdirectory names will vary depending on the user downloaded EMBL std nucleotide library, date etc. The only requirement it that subdirectory begin with *OB_dat*__
 
@@ -205,10 +202,10 @@ Step 2. Build the libraries
 	* a tutorial can be found here:
           http://metabarcoding.org/obitools/doc/wolves.html
 * The obiconvert command requires:
-	* the path to the ncbi taxonomy folder (-t)
-		* downloaded above ~/crux_db/TAXO
-	* the file format (--embl)
-	* the output folder path (--ecopcrdb-output)
+	* the path to the ncbi taxonomy folder (`-t`)
+		* downloaded above `~/crux_db/TAXO`
+	* the file format (`--embl`)
+	* the output folder path (`--ecopcrdb-output`)
 		* the file path needs to be
 
     ```
@@ -248,10 +245,10 @@ Step 2. Build the libraries
 
 ### Crux Part 1: ecoPCR, BLAST 1 and BLAST 2
 1. Run ecoPCR using the user specified primer on the user generated OBItools compatible databases.  
-  * ecoPCR parameters can be altered in the /crux_db/scripts/crux_vars.sh file
+  * ecoPCR parameters can be altered in `/crux_db/scripts/crux_vars.sh` 
 2. ecoPCR results are de-replicated based on taxon id (taxid), and converted to fasta format.
 3. cutadapt is used to verify and retain only the ecoPCR reads with correct primer sequences, then trim the primers from the 5' and 3' ends.
-4. Clean fasta files are used as seeds to generate two BLAST libraries: a full length BLAST library, and an up to 70% (or user's choice) length BLAST library.
+4. Clean fasta files are used as seeds to generate two BLAST libraries: a full length BLAST library, and an up-to 70% (or user's choice) length BLAST library.
   * These seed files are broken in to 500 read chunks and blasted as an array against blasted against the NCBI nucleotide blast databases using blastn.
   * The full length library:
     * minimum percent of subject that needs to be covered by the query = 50%
@@ -263,21 +260,16 @@ Step 2. Build the libraries
     * minimum percent identity of the query relative to the subject = 70%
     * up to 10000 hits are retained
 
-  * blastn parameters can be altered in the command line or in  /crux_db/scripts/crux_vars.sh file
+  * blastn parameters can be altered in the command line or in  `crux_db/scripts/crux_vars.sh`
   * On an HPC, each CO1 seed file requires up to ~25 GB of memory for 1.5 hours
-  * BLAST array jobs submission scripts can be found in:
-
-
-  ```
-  ~/crux_db/<metabarcode>/Run_logs/blast_jobs/*_blast*.sh
-  ```
+  * BLAST array jobs submission scripts can be found in: `~/crux_db/<metabarcode>/Run_logs/blast_jobs/*_blast*.sh`
 
   5. The blast results are de-replicated by NCBI accession version number and converted into fasta format. Only the longest instance of a read is retained.
-  6. entrez-qiime.py is used to determine taxonomy for each read based on NCBI version accession number.
-  7. An additional data base of taxonomy filtered reads is generated.  
-    * Reads with taxonomy identified as NA;NA;NA;NA, or with uncultured, unknown, unassigned, or environmental in the name are removed from the cleaned blast results fasta output and corresponding taxonomy file.
-  8. Build bowtie2 index libraries for the filtered and unfiltered Databases
-  9. Remove intermediate steps
+  6. entrez-qiime.py is used to determine taxonomy for each read based on its NCBI version accession number.
+  7. An additional database of taxonomy filtered reads is generated.  
+    * Reads with taxonomy identified as `NA;NA;NA;NA`, or with "uncultured", "unknown", "unassigned", or "environmental" in the name are removed from the cleaned blast results fasta output and corresponding taxonomy file.
+  8. bowtie2-formatted index libraries for the filtered and unfiltered databases are generated
+  9. Files from intermediate steps are cleaned
 
 CRUX is run as follows:
 ```
@@ -325,12 +317,12 @@ Arguments:
 ```
 
 
-* An example running in local mode:
+* An example of running CRUX in local mode:
 
   ```
   /bin/bash ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 280 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -l
   ```
-* An example running in HPC mode:
+* An example of running CRUX in HPC mode:
 
   ```
   /bin/bash ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 280 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -u eecurd
