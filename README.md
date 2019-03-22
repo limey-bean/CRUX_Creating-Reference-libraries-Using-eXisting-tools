@@ -27,22 +27,24 @@ The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Ana
 </p>
 
 ## Before CRUX is operable, you will need to download, install and/or build several programs and databases.
-**__First clone the CRUX_Creating-Reference-libraries-Using-eXisting-tools repository.__** Within the repository is the __crux_db__ directory.  All of the the executables, some of the programs and all database folders should be accessible from this folder. However, if you already have any these programs or databases, there is no need to add them to the crux_db folder. Instead update the file paths or loading commands to the crux_config.sh and crux_vars.sh files in the ~CRUX_Creating-Reference-libraries-Using-eXisting-tools/crux_db/scripts directory.  The final directory structure will resemble the following:
+**__First clone the CRUX_Creating-Reference-libraries-Using-eXisting-tools repository.__** Within the repository is the __crux_db__ directory.  All of the the executables, some of the programs and all database folders should be accessible from this folder. 
+
+However, *if you already have any these programs or databases*, there is no need to add them to the crux_db folder-- instead, you can update the file paths or loading commands in the `crux_config.sh` and `crux_vars.sh` files in the `~CRUX_Creating-Reference-libraries-Using-eXisting-tools/crux_db/scripts` directory.  If you choose to do this, your final directory structure should resemble the following:
 ```
 ~/CRUX_Creating-Reference-libraries-Using-eXisting-tools/
-	* ~/crux_db
-		* ~/accession2taxonomy    *added by the user*
-		* ~/crux.sh
-		* ~/ecoPCR    *added by the user*
-		* ~/ncbi-blast-2.6.0+   *added by the user*
-		* ~/NCBI_blast_nt     *added by the user*
-		* ~/Obitools_databases      *added by the user*
-		* ~/scripts
-		* ~/TAXO      *added by the user*
-	* ~/.gitignore
-	* ~/Crux_flow.png
-	* ~/Manual_addition_or_reads_to_CRUX.txt
-	* ~/README.md
+	crux_db
+		accession2taxonomy    	*added by the user*
+		crux.sh
+		ecoPCR 			*added by the user*
+		ncbi-blast-2.6.0+   	*added by the user*
+		NCBI_blast_nt     	*added by the user*
+		Obitools_databases      *added by the user*
+		scripts
+		TAXO      		*added by the user*
+	.gitignore
+	Crux_flow.png
+	Manual_addition_or_reads_to_CRUX.txt
+	README.md
 ```
 **The folders that are added by the user can be stored elsewhere as long as the file paths are correct in the crux_config.sh and crux_vars.sh files.**
 
@@ -58,11 +60,7 @@ The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Ana
 
 2. ecoPCR:
          https://git.metabarcoding.org/obitools/ecopcr/wikis/home
-	* If you are not modifying the crux_config.sh, then the path to the ecoPCR executable should be as follows:
-
-```
-~/crux_db/ecoPCR/src/ecoPCR
-```
+	* If you are not modifying the crux_config.sh, then the path to the ecoPCR executable should be as follows: `~/crux_db/ecoPCR/src/ecoPCR`
 
 3. cutadapt (Version: 1.16):
          http://cutadapt.readthedocs.io/en/stable/index.html
@@ -72,19 +70,15 @@ The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Ana
          https://www.ncbi.nlm.nih.gov/books/NBK279690/
 	* the BLAST executables can be downloaded from: ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.6.0/ncbi-blast-2.6.0+-x64-linux.tar.gz
 	* extract the tar.gz repository: `tar xvzf ~/crux_db/ncbi-blast-2.6.0+-x64-linux.tar.gz`
-	* If you are not modifying the crux_config.sh, then the path to the blastn executable should be as follows:
-
-  ```
-  ~/crux_db/ncbi-blast-2.6.0+/bin/blastn
-  ```
+	* If you are not modifying the crux_config.sh, then the path to the blastn executable should be as follows: `~/crux_db/ncbi-blast-2.6.0+/bin/blastn`
 
 5. entrez_qiime:
         https://github.com/bakerccm/entrez_qiime
-	* **entrez_qiime.py** is already included in ~/crux_db/scripts directory
+	* **entrez_qiime.py** is already included in `~/crux_db/scripts directory`
 
 6. Bowtie2:
         http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
-	* Bowtie2 does not need to be installed in the crux_db folder, however you will need to verify that the crux_config.sh is modified for you computing environment.
+	* Bowtie2 does not need to be installed in the `crux_db` folder, however you will need to verify that the `crux_config.sh` file is modified for your computing environment.
 
 
 **__Databases to download__**
@@ -93,21 +87,13 @@ The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Ana
 
 1. NCBI taxonomy dump:  
         ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz
- * If you are not modifying the crux_config.sh, then the path to the taxonomy folder should be as follows:
+ * If you are not modifying the crux_config.sh, then the path to the taxonomy folder should be as follows: `~/crux_db/TAXO`
 
- ```
- ~/crux_db/TAXO
- ```
-
-  * The folder should contain the following files: delnodes.dmp, merged.dmp, names.dmp, nodes.dmp
+  * The folder should contain the following files: `delnodes.dmp`, `merged.dmp`, `names.dmp`, `nodes.dmp`
   * download information can be found here: https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
 
 2. NCBI accession2taxonomy file: ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
-	* If you are not modifying the crux_config.sh, then the path to the accession to taxonomy file should be as follows:
-
-    ```
-    ~/crux_db/accession2taxonomy/nucl_gb.accession2taxid
-    ```
+	* If you are not modifying the crux_config.sh, then the path to the accession to taxonomy file should be as follows: `~/crux_db/accession2taxonomy/nucl_gb.accession2taxid`
 
 	* download information can be found here: https://github.com/bakerccm/entrez_qiime/blob/master/entrez_qiime.pdf
 
@@ -122,11 +108,11 @@ The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Ana
   * you should have a file structure as follows:
 ```
     /NCBI_blast_nt
-	~/nt.00.nhr
-	~/.00.nin
-	~/.00.nnd
-	~/.00.nni
-	~/...
+	nt.00.nhr
+	.00.nin
+	.00.nnd
+	.00.nni
+	...
 ```
 
 4. Database files for generating ecoPCR compatible OBItools libraries
@@ -163,7 +149,7 @@ Viral                    VRL - common
 
 * These are very large files, and it is less memory intensive to download them in small batches, and convert them into many small obitools/ecopcr readable databases.
 
-* In a temporary folder, download a single EMBL std nucleotide library;
+* In a temporary folder, download a single EMBL std nucleotide library:
     ```
     wget ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_fun
     ```
@@ -185,12 +171,12 @@ Step 2. Build the libraries
 
 ```
       ~/Obitools_databases
-    	 ~/OB_dat_EMBL_1108017_std_inv    
-    	 ~/OB_dat_EMBL_1108017_std_pln
-    	 ~/OB_dat_EMBL_1108017_std_fun
-    	 ~/OB_dat_EMBL_1108017_std_other
-    	 ~/OB_dat_EMBL_1108017_std_pro  
-    	 ~/OB_dat_EMBL_1108017_std_vrt
+    	 OB_dat_EMBL_1108017_std_inv    
+    	 OB_dat_EMBL_1108017_std_pln
+    	 OB_dat_EMBL_1108017_std_fun
+    	 OB_dat_EMBL_1108017_std_other
+    	 OB_dat_EMBL_1108017_std_pro  
+    	 OB_dat_EMBL_1108017_std_vrt
 ```
 
       __The subdirectory names will vary depending on the user downloaded EMBL std nucleotide library, date etc. The only requirement it that subdirectory begin with *OB_dat*__
@@ -224,19 +210,21 @@ Step 2. Build the libraries
     ```
     obiconvert -t </path/to/taxonfile> --embl --ecopcrdb-output=/path/to/output /path/to/inputs --skip-on-error
     ```
-	  e.g.
+e.g.
 
     ```
     obiconvert -t ~/crux_db/TAXO --embl --ecopcrdb-output=~/crux_db/Obitools_databases/OB_dat_EMBL_1108017_std_fun/OB_dat_EMBL_1108017_std_fun ~/EMBL_fun/\*.dat --skip-on-error
     ```
 * The resulting files will resemble the following:
-  * ~/OB_dat_EMBL_1108017_std_fun
-    * ~/OB_dat_EMBL_1108017_std_fun_001.sdx
-    * ~/OB_dat_EMBL_1108017_std_fun_002.sdx
-    * ~/OB_dat_EMBL_1108017_std_fun.adx
-    * ~/OB_dat_EMBL_1108017_std_fun.ndx
-    * ~/OB_dat_EMBL_1108017_std_fun.rdx
-    * ~/OB_dat_EMBL_1108017_std_fun.tdx
+```
+ ~/OB_dat_EMBL_1108017_std_fun
+    OB_dat_EMBL_1108017_std_fun_001.sdx
+    OB_dat_EMBL_1108017_std_fun_002.sdx
+    OB_dat_EMBL_1108017_std_fun.adx
+    OB_dat_EMBL_1108017_std_fun.ndx
+    OB_dat_EMBL_1108017_std_fun.rdx
+    OB_dat_EMBL_1108017_std_fun.tdx
+```
 
 ## Running CRUX
 ### CRUX scripts can be run locally on a personal computer (-l see optional arguments below), or in a High Performance Computing Environment (HPC).
@@ -262,7 +250,7 @@ Step 2. Build the libraries
 
   * blastn parameters can be altered in the command line or in  `crux_db/scripts/crux_vars.sh`
   * On an HPC, each CO1 seed file requires up to ~25 GB of memory for 1.5 hours
-  * BLAST array jobs submission scripts can be found in: `~/crux_db/<metabarcode>/Run_logs/blast_jobs/*_blast*.sh`
+  * BLAST array jobs submission scripts can be found in: `crux_db/<metabarcode>/Run_logs/blast_jobs/*_blast*.sh`
 
   5. The blast results are de-replicated by NCBI accession version number and converted into fasta format. Only the longest instance of a read is retained.
   6. entrez-qiime.py is used to determine taxonomy for each read based on its NCBI version accession number.
