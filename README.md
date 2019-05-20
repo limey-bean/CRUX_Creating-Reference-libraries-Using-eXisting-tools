@@ -27,7 +27,7 @@ The downstream metabarcoding Anacapa pipeline (https://github.com/limey-bean/Ana
 </p>
 
 ## Before CRUX is operable, you will need to download, install and/or build several programs and databases.
-**__First clone the CRUX_Creating-Reference-libraries-Using-eXisting-tools repository.__** Within the repository is the __crux_db__ directory.  All of the the executables, some of the programs and all database folders should be accessible from this folder. 
+**__First clone the CRUX_Creating-Reference-libraries-Using-eXisting-tools repository.__** Within the repository is the __crux_db__ directory.  All of the the executables, some of the programs and all database folders should be accessible from this folder.
 
 However, *if you already have any these programs or databases*, there is no need to add them to the crux_db folder-- instead, you can update the file paths or loading commands in the `crux_config.sh` and `crux_vars.sh` files in the `~CRUX_Creating-Reference-libraries-Using-eXisting-tools/crux_db/scripts` directory.  If you choose to do this, your final directory structure should resemble the following:
 ```
@@ -200,7 +200,7 @@ Step 2. Build the libraries
     e.g.
 
     ```
-    ~/crux_db/Obitools_databases/OB_dat_EMBL_1108017_std_fun/OB_dat_EMBL_1108017_std_fun
+    ~/crux_db/Obitools_databases/OB_dat_EMBL_1108017_std_fun/OB_dat_EMBL_1108017_std_fun*
     ```
     * the input file(s) path(s)
     * e.g. the folder where all fungal (fun) files are stored in a single and separate folder
@@ -233,7 +233,7 @@ e.g.
 
 ### Crux Part 1: ecoPCR, BLAST 1 and BLAST 2
 1. Run ecoPCR using the user specified primer on the user generated OBItools compatible databases.  
-  * ecoPCR parameters can be altered in `/crux_db/scripts/crux_vars.sh` 
+  * ecoPCR parameters can be altered in `/crux_db/scripts/crux_vars.sh`
 2. ecoPCR results are de-replicated based on taxon id (taxid), and converted to fasta format.
 3. cutadapt is used to verify and retain only the ecoPCR reads with correct primer sequences, then trim the primers from the 5' and 3' ends.
 4. Clean fasta files are used as seeds to generate two BLAST libraries: a full length BLAST library, and an up-to 70% (or user's choice) length BLAST library.
