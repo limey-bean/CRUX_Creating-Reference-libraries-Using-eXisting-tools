@@ -151,7 +151,7 @@ Viral                    VRL - common
 
 * In a temporary folder, download a single EMBL std nucleotide library:
     ```
-    wget ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_fun
+    wget ftp://ftp.ebi.ac.uk/pub/databases/embl/release/std/rel_std_fun*
     ```
 
     etc... The libraries will resemble the following:
