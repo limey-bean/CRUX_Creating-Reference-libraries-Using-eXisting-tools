@@ -380,8 +380,10 @@ do
 done
 
 # for all of of derepliated blast hits, combine and depreplicate by length
-python ${DB}/scripts/combine_and_dereplicate_fasta.py -o ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta -a ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/*_blast_out.fasta
+# use -d to avoid using the wildcard which has a limit on the argument list
+python ${DB}/scripts/combine_and_dereplicate_fasta.py -o ${ODIR}/${NAME}_db_unfiltered/${NAME}_.fasta -d ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy
 rm ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/*_blast_out.fasta
+mv ${ODIR}/${NAME}_db_unfiltered/${NAME}_.fasta ${ODIR}/${NAME}_db_unfiltered/${NAME}_fasta_and_taxonomy/${NAME}_.fasta
 
 ### add taxonomy using entrez_qiime.py
 echo "...Running ${j} entrez-qiime and cleaning up fasta and taxonomy files"
