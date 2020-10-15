@@ -14,9 +14,6 @@ MODULE_SOURCE="source /u/local/Modules/default/init/bash" 	#if none, leave empty
 #load cutadapt
 CUTADAPT="/u/local/apps/python/2.7.13/bin/cutadapt" 		#path to cutadapt binary. see documentation for how to obtain this script
 
-#load fastx_toolkit
-FASTX_TOOLKIT="module load fastx_toolkit"				#or what ever code is used to load fastx_toolkit in a bash shell, or path to fastx_toolkit
-
 #entrez-qiime
 ENTREZ_QIIME="${DB}/scripts/entrez_qiime.py" 						#path to python script. see documentation for how to obtain this script
 
