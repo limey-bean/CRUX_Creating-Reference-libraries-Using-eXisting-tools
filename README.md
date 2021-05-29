@@ -315,6 +315,9 @@ Arguments:
   ```
   /bin/bash ~/Crux/crux_db/crux.sh -n 12S -f GTCGGTAAAACTCGTGCCAGC -r CATAGTGGGGTATCTAATCCCAGTTTG -s 80 -m 280 -o ~/Crux/crux_db/12S -d ~/Crux/crux_db -u eecurd
     ```
+    
+## Manual CRUX Library Generation
+Some users may wish to generate their own CRUX formatted reference database to be able to run the *Anacapa Toolkit*. Typically this is if users have generated their own reference barcodes that are not yet publicly available. Please see the provided detailed instructions on how to either generated a CRUX formatted reerence database or append additional reference barcodes to an existing CRUX DB. https://github.com/limey-bean/CRUX_Creating-Reference-libraries-Using-eXisting-tools/blob/master/Manual_addition_of_reads_to_CRUX.txt
 
 
 ## References:
