@@ -4,6 +4,9 @@
 
 # CRUX: Creating Reference libraries Using eXisting tools
 
+# Check out [rCRUX](https://github.com/LunaGal/rCRUX).  
+## It is an r package that can be run with fewer computational resources!
+
 ### CRUX		last updated 4-11-2018
 #### Written by Emily Curd (eecurd@g.ucla.edu), Gaurav Kandlikar (gkandlikar@ucla.edu), and Jesse Gomer (jessegomer@gmail.com). Assistance was provided by Max Ogden (max@maxogden.com).
 
