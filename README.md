@@ -9,6 +9,8 @@
 
 #### Developed at UCLA for the University of California Conservation Genomics Consortium's CALeDNA Program
 
+## Check out the updated version / r package [rCRUX](https://github.com/CalCOFI/rCRUX)
+
 ## Introduction
 
 Taxonomic assignments of metabarcoding reads requires a comprehensive reference library. There are preexisting high quality reference libraries that are compatible with 16S and 18S metabarcode primers (Glöckner et al., 2017, DeSantis et al., 2006). There are few other comprehensive metabarcode specific reference libraries. Using  **CRUX**: **C**onstructing **R**eference libraries **U**sing e**X**isting tools (CRUX) we are able to construct custom reference libraries given a primer set and several publicly available databases.
